@@ -1,0 +1,109 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Sprint0GUI.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Sprint0GUI.Views"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Sprint0GUI.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="Sprint0GUI">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <!-- text, lines, a checkbox, and radio buttons. -->
+
+    <Grid x:Name="RootGrid" ColumnDefinitions="*, 2*, *" RowDefinitions="Auto,Auto,Auto,Auto" ShowGridLines="False">
+        <!-- Text -->
+        <TextBlock TextWrapping="Wrap">This is a text block that displays text.<LineBreak />There is a green line on top of the above text.</TextBlock>
+
+        <!-- Lines -->
+        <Line Grid.Row="3" Grid.Column="0" StartPoint="120,185" EndPoint="30,0" Stroke="Red" StrokeThickness="9" />
+        <Line Grid.Row="3" Grid.Column="0" StartPoint="0,0" EndPoint="100, 100" Stroke="Blue" StrokeThickness="5" />
+        <Line Grid.Row="0" Grid.Column="0" StartPoint="0,5" EndPoint="100, 15" Stroke="Chartreuse"
+              StrokeThickness="3" />
+        <!-- Height = "{Binding ActualHeight, ElementName=Mainwindow, Mode=OneWay}" -->
+        <!-- <Line Name="MyLIne" Grid.Row="1" Grid.Column="1" StartPoint="0,0" EndPoint="{Binding Bounds.BottomRight, Mode=OneWay,  -->
+        <!--    RelativeSource={RelativeSource FindAncestor,  -->
+        <!--    AncestorType={x:Type local:MainWindow}}}" Stroke="Blue" StrokeThickness="2"/> -->
+
+        <!-- Checkbox -->
+        <StackPanel Grid.Row="1" Grid.Column="0" Margin="3,0,0,2">
+            <CheckBox>This is a CheckBox</CheckBox>
+            <CheckBox>This is another CheckBox</CheckBox>
+            <CheckBox>This is CheckBox 3</CheckBox>
+        </StackPanel>
+
+        <!-- Radio buttons -->
+        <StackPanel Grid.Row="2" Grid.Column="0">
+            <RadioButton>This is a radio button</RadioButton>
+            <RadioButton>This is another radio button</RadioButton>
+            <RadioButton IsChecked="True">I started checked</RadioButton>
+
+        </StackPanel>
+
+        <!-- <StackPanel Grid.Row="1" Grid.Column="1" Grid.RowSpan="3" Grid.ColumnSpan="3"> -->
+
+        <!-- <Grid RowDefinitions="*,*,*" ColumnDefinitions="*,*,*" Width="300" Height="300"> -->
+        <!--     <Rectangle Fill="navy" Grid.Column="0" Grid.Row="0" /> -->
+        <!--     <Rectangle Fill="Green" Grid.Column="1" Grid.Row="1" /> -->
+        <!--     <Rectangle Fill="red" Grid.Column="2" Grid.Row="2" /> -->
+        <!-- </Grid> -->
+        <UniformGrid Grid.Row="0" Grid.Column="1" Grid.RowSpan="4" VerticalAlignment="Center"
+                     Rows="3" Columns="3" Width="300" Height="300">
+            <Rectangle Fill="navy" />
+            <Rectangle Fill="Green" />
+            <Rectangle Fill="red" />
+
+            <Rectangle Fill="red" />
+            <Rectangle Fill="navy" />
+            <Rectangle Fill="Green" />
+
+            <Rectangle Fill="Green" />
+            <Rectangle Fill="red" />
+            <Rectangle Fill="navy" />
+        </UniformGrid>
+        <!-- </StackPanel> -->
+
+
+    </Grid>
+
+    <!--<Grid>
+        ~1~ Define rows and columns for the outer grid @1@
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        ~1~ Outer Grid content @1@
+        <TextBlock Text="Outer Grid" Grid.Row="0" Grid.Column="0" />
+
+        ~1~ Inner Grid @1@
+        <Grid Grid.Row="1" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            ~1~ Inner Grid content @1@
+            <TextBlock Text="Inner Grid Cell 1" Grid.Row="0" Grid.Column="0"/>
+            <TextBlock Text="Inner Grid Cell 2" Grid.Row="0" Grid.Column="1"/>
+            <TextBlock Text="Inner Grid Cell 3" Grid.Row="1" Grid.Column="0"/>
+            <TextBlock Text="Inner Grid Cell 4" Grid.Row="1" Grid.Column="1"/>
+        </Grid>
+    </Grid>-->
+
+</Window>
