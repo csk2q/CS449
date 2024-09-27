@@ -20,8 +20,8 @@
                     Orientation="Horizontal" Spacing="10">
 
             <TextBlock FontSize="30">SOS</TextBlock>
-            <RadioButton Name="SimpleGameRadioButton" FontSize="25">Simple Game</RadioButton>
-            <RadioButton Name="GeneralGameRadioButton" FontSize="25">General Game</RadioButton>
+            <RadioButton Name="SimpleGameRadioButton" FontSize="25" IsChecked="True">Simple Game</RadioButton>
+            <RadioButton Name="GeneralGameRadioButton" FontSize="25" IsChecked="False">General Game</RadioButton>
 
         </StackPanel>
 
