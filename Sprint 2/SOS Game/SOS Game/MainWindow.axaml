@@ -54,10 +54,10 @@
                     HorizontalAlignment="Center" VerticalAlignment="Center">
             <TextBlock FontSize="25">Red Player</TextBlock>
 
-            <RadioButton GroupName="RedPlayerTileChoice" Name="RedSChoice" FontSize="20" IsChecked="False">
+            <RadioButton GroupName="RedPlayerTileChoice" Name="RedSChoice" FontSize="20" IsChecked="True">
                 S
             </RadioButton>
-            <RadioButton GroupName="RedPlayerTileChoice" Name="RedOChoice" FontSize="20" IsChecked="True">
+            <RadioButton GroupName="RedPlayerTileChoice" Name="RedOChoice" FontSize="20" IsChecked="False">
                 O
             </RadioButton>
 
