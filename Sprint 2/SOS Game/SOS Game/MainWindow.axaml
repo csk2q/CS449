@@ -6,7 +6,7 @@
         x:Class="SOS_Game.MainWindow"
         x:CompileBindings="True"
         Title="SOS_Game">
-        <!-- xmlns:converters="clr-namespace:SOS_Game.Converters" -->
+    <!-- xmlns:converters="clr-namespace:SOS_Game.Converters" -->
     <Window.Resources>
         <!-- <converters:InvertedBooleanConverter x:Key="InvertedBooleanConverter"/> -->
     </Window.Resources>
@@ -41,12 +41,10 @@
                     HorizontalAlignment="Center" VerticalAlignment="Center">
             <TextBlock FontSize="25">Blue Player</TextBlock>
 
-            <RadioButton GroupName="BluePlayer" Name="BlueSChoice" FontSize="20" IsCheckedChanged="BluePickSToken"
-                         IsChecked="True">
+            <RadioButton GroupName="BluePlayerTileChoice" Name="BlueSChoice" FontSize="20" IsChecked="True">
                 S
             </RadioButton>
-            <RadioButton GroupName="BluePlayer" Name="BlueOChoice" FontSize="20" IsCheckedChanged="BluePicksOToken"
-                         IsChecked="False">
+            <RadioButton GroupName="BluePlayerTileChoice" Name="BlueOChoice" FontSize="20" IsChecked="False">
                 O
             </RadioButton>
         </StackPanel>
@@ -56,32 +54,31 @@
                     HorizontalAlignment="Center" VerticalAlignment="Center">
             <TextBlock FontSize="25">Red Player</TextBlock>
 
-            <RadioButton GroupName="RedPlayer" Name="RedSChoice" FontSize="20" IsCheckedChanged="RedPickSToken"
-                         IsChecked="False">
+            <RadioButton GroupName="RedPlayerTileChoice" Name="RedSChoice" FontSize="20" IsChecked="False">
                 S
             </RadioButton>
-            <RadioButton GroupName="RedPlayer" Name="RedOChoice" FontSize="20" IsCheckedChanged="RedPickOToken"
-                         IsChecked="True">
+            <RadioButton GroupName="RedPlayerTileChoice" Name="RedOChoice" FontSize="20" IsChecked="True">
                 O
             </RadioButton>
 
         </StackPanel>
-        
+
         <!-- Board size control -->
         <StackPanel Grid.Row="2" Grid.Column="1"
                     VerticalAlignment="Center" HorizontalAlignment="Center"
                     Orientation="Horizontal" Spacing="10">
-            
+
             <!-- TODO hook up to the backing logic -->
             <TextBlock FontSize="20" VerticalAlignment="Center">Current turn: blue (or red)</TextBlock>
 
         </StackPanel>
-        
+
         <!-- New Game Button -->
         <Button Grid.Row="2" Grid.Column="2"
                 HorizontalAlignment="Center" VerticalAlignment="Center"
-                FontSize="17" Click="ClickNewGameButton"
-                >New game</Button>
+                FontSize="17" Click="ClickNewGameButton">
+            New game
+        </Button>
 
 
         <!-- Game Board -->
@@ -90,7 +87,7 @@
             <!-- <Rectangle Stretch="Uniform" Fill="Wheat" MinHeight="100" MinWidth="100" HorizontalAlignment="Center" VerticalAlignment="Center"/> -->
 
             <!-- TODO generate the contents of the following board through code -->
-            
+
             <Grid RowDefinitions="Auto" ColumnDefinitions="Auto">
                 <Border BorderThickness="1" BorderBrush="Black">
                     <UniformGrid x:Name="GameBoardGrid" Columns="3" Rows="3" MinHeight="130" MinWidth="130"

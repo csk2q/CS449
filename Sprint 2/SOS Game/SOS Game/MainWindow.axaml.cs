@@ -19,54 +19,6 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
     }
-    
-    /*  Sync token choice between players*/
-    private void BluePickSToken(object? sender, RoutedEventArgs e)
-    {
-        if (DisableTokenPickEvents || !(BlueSChoice?.IsChecked ?? false))
-            return;
-        DisableTokenPickEvents = true;
-
-        RedSChoice.IsChecked = false;
-        RedOChoice.IsChecked = true;
-
-        DisableTokenPickEvents = false;
-    }
-    private void BluePicksOToken(object? sender, RoutedEventArgs e)
-    {
-        if (DisableTokenPickEvents || !(BlueOChoice?.IsChecked ?? false))
-            return;
-        DisableTokenPickEvents = true;
-
-        RedSChoice.IsChecked = true;
-        RedOChoice.IsChecked = false;
-
-        DisableTokenPickEvents = false;
-    }
-    private void RedPickSToken(object? sender, RoutedEventArgs e)
-    {
-        if (DisableTokenPickEvents || !(RedSChoice?.IsChecked ?? false))
-            return;
-
-        DisableTokenPickEvents = true;
-
-        BlueSChoice.IsChecked = false;
-        BlueOChoice.IsChecked = true;
-
-        DisableTokenPickEvents = false;
-    }
-    private void RedPickOToken(object? sender, RoutedEventArgs e)
-    {
-        if (DisableTokenPickEvents || !(RedOChoice?.IsChecked ?? false))
-            return;
-
-        DisableTokenPickEvents = true;
-
-        BlueSChoice.IsChecked = true;
-        BlueOChoice.IsChecked = false;
-
-        DisableTokenPickEvents = false;
-    }
 
     private Border GetNewTile(TileType tileType)
     {
