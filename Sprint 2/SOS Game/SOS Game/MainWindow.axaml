@@ -12,7 +12,7 @@
     </Window.Resources>
 
 
-    <Grid ColumnDefinitions="*,Auto,*" RowDefinitions="*,3*,*" ShowGridLines="True">
+    <Grid ColumnDefinitions="*,Auto,*" RowDefinitions="*,3*,*" ShowGridLines="False">
 
         <!-- Game mode picker -->
         <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
@@ -82,91 +82,136 @@
 
 
         <!-- Game Board -->
-        <Viewbox Grid.Row="1" Grid.Column="1" Stretch="Uniform" StretchDirection="UpOnly"
-                 ClipToBounds="False" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <!-- <Viewbox Grid.Row="1" Grid.Column="1" Stretch="Fill" StretchDirection="UpOnly" -->
+        <!--          ClipToBounds="False" HorizontalAlignment="Center" VerticalAlignment="Center"> -->
             <!-- <Rectangle Stretch="Uniform" Fill="Wheat" MinHeight="100" MinWidth="100" HorizontalAlignment="Center" VerticalAlignment="Center"/> -->
 
             <!-- TODO generate the contents of the following board through code -->
+            <Border Grid.Row="1" Grid.Column="1" BorderThickness="1" BorderBrush="Black">
+                <Grid x:Name="GameBoardGrid" RowDefinitions="*,*,*,*" ColumnDefinitions="*,*,*,*"
+                             HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ShowGridLines="True">
+                    <!-- MinHeight="130" MinWidth="130" -->
 
-            <Grid RowDefinitions="Auto" ColumnDefinitions="Auto">
-                <Border BorderThickness="1" BorderBrush="Black">
-                    <UniformGrid x:Name="GameBoardGrid" Columns="3" Rows="3" MinHeight="130" MinWidth="130"
-                                 HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Border Grid.Row="0" Grid.Column="0" BorderThickness="0.5" BorderBrush="Black">
+                        <Button Content="S" FontSize="35" Background="DarkGray"
+                                HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="0"
+                                Padding="0" Margin="0" BorderThickness="0"
+                                />
+                    </Border>
+                    <Border Grid.Row="0" Grid.Column="1" BorderThickness="0.5" BorderBrush="Black">
+                        <Button Content="S" FontSize="35" Background="Gray" HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center" HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch" CornerRadius="0" Padding="0" Margin="0"
+                                BorderThickness="0" />
+                    </Border>
+                    <Border Grid.Row="0" Grid.Column="2" BorderThickness="0.5" BorderBrush="Black">
+                        <Button Content="S" FontSize="35" Background="DarkGray"
+                                HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="0"
+                                Padding="0" Margin="0" BorderThickness="0" />
+                    </Border>
+                    <Border Grid.Row="0" Grid.Column="3" BorderThickness="0.5" BorderBrush="Black">
+                        <Button Content="S" FontSize="35" Background="Gray" HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center" HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch" CornerRadius="0" Padding="0" Margin="0"
+                                BorderThickness="0" />
+                    </Border>
+                    
+                    <Border Grid.Row="1" Grid.Column="0" BorderThickness="0.5" BorderBrush="Black">
+                        <Button Content="S" FontSize="35" Background="DarkGray"
+                                HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="0"
+                                Padding="0" Margin="0" BorderThickness="0" />
+                    </Border>
+                    <Border Grid.Row="1" Grid.Column="1" BorderThickness="0.5" BorderBrush="Black">
+                        <Button Content="S" FontSize="35" Background="Gray" HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center" HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch" CornerRadius="0" Padding="0" Margin="0"
+                                BorderThickness="0" />
+                    </Border>
+                    <Border Grid.Row="1" Grid.Column="2" BorderThickness="0.5" BorderBrush="Black">
+                        <Button Content="S" FontSize="35" Background="DarkGray"
+                                HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="0"
+                                Padding="0" Margin="0" BorderThickness="0" />
+                    </Border>
+                    <Border Grid.Row="1" Grid.Column="3" BorderThickness="0.5" BorderBrush="Black">
+                        <Button Content="S" FontSize="35" Background="Gray" HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center" HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch" CornerRadius="0" Padding="0" Margin="0"
+                                BorderThickness="0" />
+                    </Border>
+                    
+                    <Border Grid.Row="2" Grid.Column="0" BorderThickness="0.5" BorderBrush="Black">
+                        <Button Content="S" FontSize="35" Background="DarkGray"
+                                HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="0"
+                                Padding="0" Margin="0" BorderThickness="0" />
+                    </Border>
+                    <Border Grid.Row="2" Grid.Column="1" BorderThickness="0.5" BorderBrush="Black">
+                        <Button Content="S" FontSize="35" Background="Gray" HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center" HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch" CornerRadius="0" Padding="0" Margin="0"
+                                BorderThickness="0" />
+                    </Border>
+                    <Border Grid.Row="2" Grid.Column="2" BorderThickness="0.5" BorderBrush="Black">
+                        <Button Content="S" FontSize="35" Background="DarkGray"
+                                HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="0"
+                                Padding="0" Margin="0" BorderThickness="0" />
+                    </Border>
+                    <Border Grid.Row="2" Grid.Column="3" BorderThickness="0.5" BorderBrush="Black">
+                        <Button Content="S" FontSize="35" Background="Gray" HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center" HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch" CornerRadius="0" Padding="0" Margin="0"
+                                BorderThickness="0" />
+                    </Border>
+                    
+                    <Border Grid.Row="3" Grid.Column="0" BorderThickness="0.5" BorderBrush="Black">
+                        <Button Content="S" FontSize="35" Background="DarkGray"
+                                HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="0"
+                                Padding="0" Margin="0" BorderThickness="0" />
+                    </Border>
+                    <Border Grid.Row="3" Grid.Column="1" BorderThickness="0.5" BorderBrush="Black">
+                        <Button Content="S" FontSize="35" Background="Gray" HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center" HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch" CornerRadius="0" Padding="0" Margin="0"
+                                BorderThickness="0" />
+                    </Border>
+                    <Border Grid.Row="3" Grid.Column="2" BorderThickness="0.5" BorderBrush="Black">
+                        <Button Content="S" FontSize="35" Background="DarkGray"
+                                HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="0"
+                                Padding="0" Margin="0" BorderThickness="0" />
+                    </Border>
+                    <Border Grid.Row="3" Grid.Column="3" BorderThickness="0.5" BorderBrush="Black">
+                        <Button Content="S" FontSize="35" Background="Gray" HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center" HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch" CornerRadius="0" Padding="0" Margin="0"
+                                BorderThickness="0" />
+                    </Border>
+                </Grid>
+            </Border>
 
-                        <Border BorderThickness="0.5" BorderBrush="Black">
-                            <Button Content="S" FontSize="35" Background="DarkGray"
-                                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="0"
-                                    Padding="0" Margin="0" BorderThickness="0" />
-                        </Border>
-                        <Border BorderThickness="0.5" BorderBrush="Black">
-                            <Button Content="S" FontSize="35" Background="Gray" HorizontalContentAlignment="Center"
-                                    VerticalContentAlignment="Center" HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Stretch" CornerRadius="0" Padding="0" Margin="0"
-                                    BorderThickness="0" />
-                        </Border>
-                        <Border BorderThickness="0.5" BorderBrush="Black">
-                            <Button Content="S" FontSize="35" Background="DarkGray"
-                                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="0"
-                                    Padding="0" Margin="0" BorderThickness="0" />
-                        </Border>
-                        <Border BorderThickness="0.5" BorderBrush="Black">
-                            <Button Content="S" FontSize="35" Background="Gray" HorizontalContentAlignment="Center"
-                                    VerticalContentAlignment="Center" HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Stretch" CornerRadius="0" Padding="0" Margin="0"
-                                    BorderThickness="0" />
-                        </Border>
-                        <Border BorderThickness="0.5" BorderBrush="Black">
-                            <Button Content="S" FontSize="35" Background="DarkGray"
-                                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="0"
-                                    Padding="0" Margin="0" BorderThickness="0" />
-                        </Border>
-                        <Border BorderThickness="0.5" BorderBrush="Black">
-                            <Button Content="S" FontSize="35" Background="Gray" HorizontalContentAlignment="Center"
-                                    VerticalContentAlignment="Center" HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Stretch" CornerRadius="0" Padding="0" Margin="0"
-                                    BorderThickness="0" />
-                        </Border>
-                        <Border BorderThickness="0.5" BorderBrush="Black">
-                            <Button Content="S" FontSize="35" Background="DarkGray"
-                                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="0"
-                                    Padding="0" Margin="0" BorderThickness="0" />
-                        </Border>
-                        <Border BorderThickness="0.5" BorderBrush="Black">
-                            <Button Content="S" FontSize="35" Background="Gray" HorizontalContentAlignment="Center"
-                                    VerticalContentAlignment="Center" HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Stretch" CornerRadius="0" Padding="0" Margin="0"
-                                    BorderThickness="0" />
-                        </Border>
-                        <Border BorderThickness="0.5" BorderBrush="Black">
-                            <Button Content="S" FontSize="35" Background="DarkGray"
-                                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="0"
-                                    Padding="0" Margin="0" BorderThickness="0" />
-                        </Border>
-                    </UniformGrid>
-                </Border>
+
+            <!-- <UniformGrid x:Name="GameTextGrid" Columns="3" Rows="3" MinHeight="130" MinWidth="130" -->
+            <!--              HorizontalAlignment="Center" VerticalAlignment="Center"> -->
+            <!--     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="35" IsHitTestVisible="False">B</TextBlock> -->
+            <!--     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="35" IsHitTestVisible="False">B</TextBlock> -->
+            <!--     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="35" IsHitTestVisible="False">B</TextBlock> -->
+            <!--     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="35" IsHitTestVisible="False">B</TextBlock> -->
+            <!--     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="35" IsHitTestVisible="False">B</TextBlock> -->
+            <!--     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="35" IsHitTestVisible="False">B</TextBlock> -->
+            <!--     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="35" IsHitTestVisible="False">B</TextBlock> -->
+            <!--     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="35" IsHitTestVisible="False">B</TextBlock> -->
+            <!--     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="35" IsHitTestVisible="False">B</TextBlock> -->
+            <!-- </UniformGrid> -->
+            <!-- </R> -->
 
 
-                <!-- <UniformGrid x:Name="GameTextGrid" Columns="3" Rows="3" MinHeight="130" MinWidth="130" -->
-                <!--              HorizontalAlignment="Center" VerticalAlignment="Center"> -->
-                <!--     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="35" IsHitTestVisible="False">B</TextBlock> -->
-                <!--     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="35" IsHitTestVisible="False">B</TextBlock> -->
-                <!--     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="35" IsHitTestVisible="False">B</TextBlock> -->
-                <!--     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="35" IsHitTestVisible="False">B</TextBlock> -->
-                <!--     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="35" IsHitTestVisible="False">B</TextBlock> -->
-                <!--     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="35" IsHitTestVisible="False">B</TextBlock> -->
-                <!--     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="35" IsHitTestVisible="False">B</TextBlock> -->
-                <!--     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="35" IsHitTestVisible="False">B</TextBlock> -->
-                <!--     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="35" IsHitTestVisible="False">B</TextBlock> -->
-                <!-- </UniformGrid> -->
-            </Grid>
-
-
-        </Viewbox>
+        <!-- </Viewbox> -->
 
 
     </Grid>

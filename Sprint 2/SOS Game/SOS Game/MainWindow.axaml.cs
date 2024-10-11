@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Text.Json;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -29,13 +31,13 @@ public partial class MainWindow : Window
             BorderBrush = Brushes.Black,
             Child = new Button
             {
-                Content = "", // Button content
-                FontSize = 35, // Font size of the button text
+                Content = "A", // Button content
+                // FontSize = 35, // Font size of the button text
                 Background = Brushes.Gray, // Background color of the button
                 HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Center,
                 VerticalContentAlignment = Avalonia.Layout.VerticalAlignment.Center,
-                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
-                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Stretch,
+                // HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
+                // VerticalAlignment = Avalonia.Layout.VerticalAlignment.Stretch,
                 CornerRadius = new CornerRadius(0), // No rounded corners
                 Padding = new Thickness(0), // No padding
                 Margin = new Thickness(0), // No margin
@@ -60,9 +62,9 @@ public partial class MainWindow : Window
         }*/
         
         // Add click event function
-        ((Button)tileElement.Child).Click += ClickTile;
-        
+        // ((Button)tileElement.Child).Click += ClickTile;
 
+        // return (Control)tileElement.Child;
         return tileElement;
     }
     
@@ -94,19 +96,37 @@ public partial class MainWindow : Window
 
     private void ClickNewGameButton(object? sender, RoutedEventArgs e)
     {
-        var boardSize = Convert.ToInt32(BoardSizeNumericUpDown.Value);
+        //TODO Remove magic numbers for min(3) and max(20) board size
+        var boardSize = Math.Clamp(Convert.ToInt32(BoardSizeNumericUpDown.Value), 3, 20);
         var newTiles = new List<Border>(boardSize);
 
+        //Generate new tiles
         for (int i = 0; i < Math.Pow(boardSize, 2); i++)
         {
             var tile = GetNewTile(TileType.None);
-            tile!.Child!.Tag = new Position(i / boardSize, i % boardSize);
+            // tile!.Child!.Tag = new Position(i / boardSize, i % boardSize);
+            Grid.SetRow(tile, i / boardSize); 
+            Grid.SetColumn(tile, i % boardSize);
+
+            
+            GameBoardGrid.SizeChanged += (sender, e) =>
+            {
+                var gridSize = Math.Min(tile.Bounds.Width, tile.Bounds.Height);
+                tile.Width = tile.Height = gridSize / boardSize;
+            };
             
             newTiles.Add(tile);
         }
         
+        
         //Clear existing board UI
         GameBoardGrid.Children.Clear();
+        
+        // Update board size
+        GameBoardGrid.ColumnDefinitions.Clear();
+        GameBoardGrid.RowDefinitions.Clear();
+        GameBoardGrid.ColumnDefinitions.AddRange(Enumerable.Repeat(new ColumnDefinition(GridLength.Star), boardSize));
+        GameBoardGrid.RowDefinitions.AddRange(Enumerable.Repeat(new RowDefinition(GridLength.Star), boardSize));
         
         //Add new tiles to boardUI
         GameBoardGrid.Children.AddRange(newTiles);
