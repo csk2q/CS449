@@ -127,18 +127,19 @@ public partial class MainWindow : Window
             Grid.SetRow(tile, i / boardSize); 
             Grid.SetColumn(tile, i % boardSize);
 
-            var gridSize = Math.Min(GameBoardGrid.Bounds.Width, GameBoardGrid.Bounds.Height);
+            var gridSize = Math.Min(GameBoarder.Bounds.Width, GameBoarder.Bounds.Height);
             tile.Width = tile.Height = gridSize / boardSize;
 
             GameBoardGrid.Children.CollectionChanged += (_, __) =>
             {
-                var gridSize = Math.Min(GameBoardGrid.Bounds.Width, GameBoardGrid.Bounds.Height);
+                var gridSize = Math.Min(GameBoarder.Bounds.Width, GameBoarder.Bounds.Height);
                 GameBoardGrid.Width = GameBoardGrid.Height = gridSize;
             };
             
+            
             GameBoardGrid.SizeChanged += (sender, e) =>
             {
-                var gridSize = Math.Min(GameBoardGrid.Bounds.Width, GameBoardGrid.Bounds.Height);
+                var gridSize = Math.Min(GameBoarder.Bounds.Width, GameBoarder.Bounds.Height);
                 tile.Width = tile.Height = gridSize / boardSize;
             };
             
@@ -161,5 +162,11 @@ public partial class MainWindow : Window
         
         
         
+    }
+
+    private void OnWindowSizeChanged(object? sender, SizeChangedEventArgs e)
+    {
+        var gridSize = Math.Min(GameBoarder.Bounds.Width, GameBoarder.Bounds.Height);
+        GameBoardGrid.Width = GameBoardGrid.Height = gridSize;
     }
 }

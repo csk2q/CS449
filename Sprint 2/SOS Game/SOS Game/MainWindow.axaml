@@ -5,7 +5,8 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="SOS_Game.MainWindow"
         x:CompileBindings="True"
-        Title="SOS_Game">
+        Title="SOS_Game"
+        SizeChanged="OnWindowSizeChanged">
     <!-- xmlns:converters="clr-namespace:SOS_Game.Converters" -->
     <Window.Resources>
         <!-- <converters:InvertedBooleanConverter x:Key="InvertedBooleanConverter"/> -->
@@ -88,8 +89,7 @@
 
             <!-- TODO generate the contents of the following board through code -->
         <Border Name="GameBoarder" Grid.Row="1" Grid.Column="1"
-                BorderBrush="Aqua" BorderThickness="1"
-                >
+                BorderBrush="White" BorderThickness="0" Opacity="0">
                 <UniformGrid x:Name="GameBoardGrid" Grid.Row="1" Grid.Column="1"
                              HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
                              Margin="0">
