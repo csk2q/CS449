@@ -22,16 +22,16 @@ public partial class MainWindow : Window
         InitializeComponent();
     }
 
-    private Border GetNewTile(TileType tileType)
+    private Button GetNewTile(TileType tileType)
     {
-        // tileElement for reuse in the board
+        /*// tileElement for reuse in the board
         Border tileElement = new Border
         {
             BorderThickness = new Thickness(0.5),
             BorderBrush = Brushes.Black,
             Child = new Button
             {
-                Content = "A", // Button content
+                Content = "", // Button content
                 // FontSize = 35, // Font size of the button text
                 Background = Brushes.Gray, // Background color of the button
                 HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Center,
@@ -43,11 +43,28 @@ public partial class MainWindow : Window
                 Margin = new Thickness(0), // No margin
                 BorderThickness = new Thickness(0), // No border on the button
             }
+        };*/
+
+        var button = new Button
+        {
+            Content = "", // Button content
+            // FontSize = 35, // Font size of the button text
+            Background = Brushes.Gray, // Background color of the button
+            HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+            VerticalContentAlignment = Avalonia.Layout.VerticalAlignment.Center,
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
+            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Stretch,
+            CornerRadius = new CornerRadius(0), // No rounded corners
+            Padding = new Thickness(0), // No padding
+            Margin = new Thickness(0), // No margin
+            BorderThickness = new Thickness(1), // No border on the button
+            BorderBrush = Brushes.Red,
         };
         
         // Set letter of tile
         if(tileType != TileType.None)
-            ((Button)tileElement.Child).Content = Enum.GetName<TileType>(tileType);
+            button.Content = Enum.GetName<TileType>(tileType);
+        //     ((Button)tileElement.Child).Content = Enum.GetName<TileType>(tileType);
         /*switch (tileType)
         {
             default:
@@ -65,7 +82,9 @@ public partial class MainWindow : Window
         // ((Button)tileElement.Child).Click += ClickTile;
 
         // return (Control)tileElement.Child;
-        return tileElement;
+        // return tileElement;
+
+        return button;
     }
     
     // DEBUG example function for using tag data
@@ -98,7 +117,7 @@ public partial class MainWindow : Window
     {
         //TODO Remove magic numbers for min(3) and max(20) board size
         var boardSize = Math.Clamp(Convert.ToInt32(BoardSizeNumericUpDown.Value), 3, 20);
-        var newTiles = new List<Border>(boardSize);
+        var newTiles = new List<Button>(boardSize);
 
         //Generate new tiles
         for (int i = 0; i < Math.Pow(boardSize, 2); i++)
@@ -108,10 +127,18 @@ public partial class MainWindow : Window
             Grid.SetRow(tile, i / boardSize); 
             Grid.SetColumn(tile, i % boardSize);
 
+            var gridSize = Math.Min(GameBoardGrid.Bounds.Width, GameBoardGrid.Bounds.Height);
+            tile.Width = tile.Height = gridSize / boardSize;
+
+            GameBoardGrid.Children.CollectionChanged += (_, __) =>
+            {
+                var gridSize = Math.Min(GameBoardGrid.Bounds.Width, GameBoardGrid.Bounds.Height);
+                GameBoardGrid.Width = GameBoardGrid.Height = gridSize;
+            };
             
             GameBoardGrid.SizeChanged += (sender, e) =>
             {
-                var gridSize = Math.Min(tile.Bounds.Width, tile.Bounds.Height);
+                var gridSize = Math.Min(GameBoardGrid.Bounds.Width, GameBoardGrid.Bounds.Height);
                 tile.Width = tile.Height = gridSize / boardSize;
             };
             
@@ -123,10 +150,11 @@ public partial class MainWindow : Window
         GameBoardGrid.Children.Clear();
         
         // Update board size
-        GameBoardGrid.ColumnDefinitions.Clear();
-        GameBoardGrid.RowDefinitions.Clear();
-        GameBoardGrid.ColumnDefinitions.AddRange(Enumerable.Repeat(new ColumnDefinition(GridLength.Star), boardSize));
-        GameBoardGrid.RowDefinitions.AddRange(Enumerable.Repeat(new RowDefinition(GridLength.Star), boardSize));
+        // GameBoardGrid
+        // GameBoardGrid.ColumnDefinitions.Clear();
+        // GameBoardGrid.RowDefinitions.Clear();
+        // GameBoardGrid.ColumnDefinitions.AddRange(Enumerable.Repeat(new ColumnDefinition(GridLength.Star), boardSize));
+        // GameBoardGrid.RowDefinitions.AddRange(Enumerable.Repeat(new RowDefinition(GridLength.Star), boardSize));
         
         //Add new tiles to boardUI
         GameBoardGrid.Children.AddRange(newTiles);

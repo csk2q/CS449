@@ -12,12 +12,12 @@
     </Window.Resources>
 
 
-    <Grid ColumnDefinitions="*,Auto,*" RowDefinitions="*,3*,*" ShowGridLines="False">
+    <Grid ColumnDefinitions="*,2*,*" RowDefinitions="*,3.3*,*" ShowGridLines="True">
 
         <!-- Game mode picker -->
         <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-                    VerticalAlignment="Center" HorizontalAlignment="Center"
-                    Orientation="Horizontal" Spacing="10">
+                    VerticalAlignment="Center" HorizontalAlignment="Left"
+                    Orientation="Horizontal" Spacing="10" Margin="18">
 
             <TextBlock FontSize="30">SOS</TextBlock>
             <RadioButton Name="SimpleGameRadioButton" FontSize="25" IsChecked="True">Simple Game</RadioButton>
@@ -26,9 +26,9 @@
         </StackPanel>
 
         <!-- Board size control -->
-        <StackPanel Grid.Row="0" Grid.Column="2"
-                    VerticalAlignment="Center" HorizontalAlignment="Center"
-                    Orientation="Horizontal" Spacing="10">
+        <StackPanel Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
+                    VerticalAlignment="Center" HorizontalAlignment="Right"
+                    Orientation="Horizontal" Spacing="10" Margin="18">
             <TextBlock FontSize="20" VerticalAlignment="Center">Board Size: </TextBlock>
             <NumericUpDown Name="BoardSizeNumericUpDown" FontSize="19" Value="3" Minimum="3" Maximum="12" Increment="1" />
 
@@ -87,17 +87,20 @@
             <!-- <Rectangle Stretch="Uniform" Fill="Wheat" MinHeight="100" MinWidth="100" HorizontalAlignment="Center" VerticalAlignment="Center"/> -->
 
             <!-- TODO generate the contents of the following board through code -->
-            <Border Grid.Row="1" Grid.Column="1" BorderThickness="1" BorderBrush="Black">
-                <Grid x:Name="GameBoardGrid" RowDefinitions="*,*,*,*" ColumnDefinitions="*,*,*,*"
-                             HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ShowGridLines="True">
+        <Border Name="GameBoarder" Grid.Row="1" Grid.Column="1"
+                BorderBrush="Aqua" BorderThickness="1"
+                >
+                <UniformGrid x:Name="GameBoardGrid" Grid.Row="1" Grid.Column="1"
+                             HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                             Margin="0">
                     <!-- MinHeight="130" MinWidth="130" -->
 
                     <Border Grid.Row="0" Grid.Column="0" BorderThickness="0.5" BorderBrush="Black">
                         <Button Content="S" FontSize="35" Background="DarkGray"
                                 HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="0"
-                                Padding="0" Margin="0" BorderThickness="0"
-                                />
+                                Padding="0" Margin="0" BorderThickness="1"
+                        />
                     </Border>
                     <Border Grid.Row="0" Grid.Column="1" BorderThickness="0.5" BorderBrush="Black">
                         <Button Content="S" FontSize="35" Background="Gray" HorizontalContentAlignment="Center"
@@ -192,23 +195,8 @@
                                 VerticalAlignment="Stretch" CornerRadius="0" Padding="0" Margin="0"
                                 BorderThickness="0" />
                     </Border>
-                </Grid>
-            </Border>
-
-
-            <!-- <UniformGrid x:Name="GameTextGrid" Columns="3" Rows="3" MinHeight="130" MinWidth="130" -->
-            <!--              HorizontalAlignment="Center" VerticalAlignment="Center"> -->
-            <!--     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="35" IsHitTestVisible="False">B</TextBlock> -->
-            <!--     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="35" IsHitTestVisible="False">B</TextBlock> -->
-            <!--     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="35" IsHitTestVisible="False">B</TextBlock> -->
-            <!--     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="35" IsHitTestVisible="False">B</TextBlock> -->
-            <!--     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="35" IsHitTestVisible="False">B</TextBlock> -->
-            <!--     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="35" IsHitTestVisible="False">B</TextBlock> -->
-            <!--     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="35" IsHitTestVisible="False">B</TextBlock> -->
-            <!--     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="35" IsHitTestVisible="False">B</TextBlock> -->
-            <!--     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" FontSize="35" IsHitTestVisible="False">B</TextBlock> -->
-            <!-- </UniformGrid> -->
-            <!-- </R> -->
+                </UniformGrid>
+        </Border>
 
 
         <!-- </Viewbox> -->
