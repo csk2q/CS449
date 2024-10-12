@@ -12,14 +12,24 @@ namespace SOS_Game;
 
 public partial class MainWindow : Window
 {
-    private bool DisableTokenPickEvents = false;
-    // public int BoardSize = 3;
+    // These *must* be public for ui binding to take place
+    public const decimal MinBoardSize = 3;
+    public const decimal MaxBoardSize = 20;
 
-    // private bool BluePlayerIsS = true;
 
+    private int currentBoardSize;
+    
     public MainWindow()
     {
         InitializeComponent();
+        DataContext = this;
+
+        currentBoardSize = GetBoardSizeInput();
+    }
+
+    private int GetBoardSizeInput()
+    {
+        return (int)Math.Clamp(Convert.ToInt32(BoardSizeNumericUpDown.Value), MinBoardSize, MaxBoardSize);
     }
 
     private Button GetNewTile(TileType tileType)
@@ -76,33 +86,28 @@ public partial class MainWindow : Window
 
     private void ClickNewGameButton(object? sender, RoutedEventArgs e)
     {
-        //TODO Remove magic numbers for min(3) and max(20) board size
-        var boardSize = Math.Clamp(Convert.ToInt32(BoardSizeNumericUpDown.Value), 3, 20);
+
+        //Get board size
+        var boardSize = currentBoardSize = GetBoardSizeInput();
         var newTiles = new List<Button>(boardSize);
+        
+        //TODO Clean up event handler leaks in 
+        // GameBoardGrid.Children.CollectionChanged
+        // GameBoardGrid.SizeChanged
 
         //Generate new tiles
         for (int i = 0; i < Math.Pow(boardSize, 2); i++)
         {
             var tile = GetNewTile(TileType.None);
+            
+            //Set position on board
             // tile!.Child!.Tag = new Position(i / boardSize, i % boardSize);
-            Grid.SetRow(tile, i / boardSize); 
+            Grid.SetRow(tile, i / boardSize);
             Grid.SetColumn(tile, i % boardSize);
 
+            // Set tile size to remain square
             var gridSize = Math.Min(GameBoarder.Bounds.Width, GameBoarder.Bounds.Height);
             tile.Width = tile.Height = gridSize / boardSize;
-
-            GameBoardGrid.Children.CollectionChanged += (_, __) =>
-            {
-                var gridSize = Math.Min(GameBoarder.Bounds.Width, GameBoarder.Bounds.Height);
-                GameBoardGrid.Width = GameBoardGrid.Height = gridSize;
-            };
-            
-            
-            GameBoardGrid.SizeChanged += (sender, e) =>
-            {
-                var gridSize = Math.Min(GameBoarder.Bounds.Width, GameBoarder.Bounds.Height);
-                tile.Width = tile.Height = gridSize / boardSize;
-            };
             
             newTiles.Add(tile);
         }
@@ -119,5 +124,18 @@ public partial class MainWindow : Window
     {
         var gridSize = Math.Min(GameBoarder.Bounds.Width, GameBoarder.Bounds.Height);
         GameBoardGrid.Width = GameBoardGrid.Height = gridSize;
+    }
+
+    private void GameBoardGrid_OnSizeChanged(object? sender, SizeChangedEventArgs e)
+    {
+        var gridSize = Math.Min(GameBoarder.Bounds.Width, GameBoarder.Bounds.Height);
+        
+        foreach (var control in GameBoardGrid.Children)
+        {
+            if(control is Button tile)
+            {
+                tile.Width = tile.Height = gridSize / currentBoardSize;
+            }
+        }
     }
 }

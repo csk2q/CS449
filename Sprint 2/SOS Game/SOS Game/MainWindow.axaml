@@ -2,18 +2,19 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:sosGame="clr-namespace:SOS_Game"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="SOS_Game.MainWindow"
-        x:CompileBindings="True"
-        Title="SOS_Game"
+        x:DataType="sosGame:MainWindow"
+        Title="SOS Game"
         SizeChanged="OnWindowSizeChanged">
     <!-- xmlns:converters="clr-namespace:SOS_Game.Converters" -->
     <Window.Resources>
         <!-- <converters:InvertedBooleanConverter x:Key="InvertedBooleanConverter"/> -->
     </Window.Resources>
+    
 
-
-    <Grid ColumnDefinitions="*,2*,*" RowDefinitions="*,3.3*,*" ShowGridLines="True">
+    <Grid ColumnDefinitions="*,2*,*" RowDefinitions="*,3.3*,*" ShowGridLines="False">
 
         <!-- Game mode picker -->
         <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
@@ -31,7 +32,7 @@
                     VerticalAlignment="Center" HorizontalAlignment="Right"
                     Orientation="Horizontal" Spacing="10" Margin="18">
             <TextBlock FontSize="20" VerticalAlignment="Center">Board Size: </TextBlock>
-            <NumericUpDown Name="BoardSizeNumericUpDown" FontSize="19" Value="3" Minimum="3" Maximum="12" Increment="1" />
+            <NumericUpDown Name="BoardSizeNumericUpDown" FontSize="19" Value="3" Minimum="{x:Static sosGame:MainWindow.MinBoardSize}" Maximum="{x:Static sosGame:MainWindow.MaxBoardSize}" Increment="1" />
 
         </StackPanel>
 
@@ -81,19 +82,13 @@
             New game
         </Button>
 
-
-        <!-- Game Board -->
-        <!-- <Viewbox Grid.Row="1" Grid.Column="1" Stretch="Fill" StretchDirection="UpOnly" -->
-        <!--          ClipToBounds="False" HorizontalAlignment="Center" VerticalAlignment="Center"> -->
-            <!-- <Rectangle Stretch="Uniform" Fill="Wheat" MinHeight="100" MinWidth="100" HorizontalAlignment="Center" VerticalAlignment="Center"/> -->
-
+        
             <!-- TODO generate the contents of the following board through code -->
         <Border Name="GameBoarder" Grid.Row="1" Grid.Column="1"
-                BorderBrush="White" BorderThickness="0" Opacity="0">
+                BorderBrush="White" BorderThickness="0">
                 <UniformGrid x:Name="GameBoardGrid" Grid.Row="1" Grid.Column="1"
                              HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
-                             Margin="0">
-                    <!-- MinHeight="130" MinWidth="130" -->
+                             Margin="0" SizeChanged="GameBoardGrid_OnSizeChanged">
                     
                         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Background="Gray">
                         <TextBlock FontSize="19" TextAlignment="Center">Choose your settings,</TextBlock>
