@@ -32,11 +32,11 @@
                     VerticalAlignment="Center" HorizontalAlignment="Right"
                     Orientation="Horizontal" Spacing="10" Margin="18">
             <TextBlock FontSize="20" VerticalAlignment="Center">Board Size: </TextBlock>
-            <NumericUpDown Name="BoardSizeNumericUpDown" FontSize="19" Value="3" Minimum="{x:Static sosGame:MainWindow.MinBoardSize}" Maximum="{x:Static sosGame:MainWindow.MaxBoardSize}" Increment="1" />
+            <NumericUpDown Name="BoardSizeNumericUpDown" FontSize="19" Value="3" Increment="1"
+                           Minimum="{x:Static sosGame:MainWindow.MinBoardSize}"
+                           Maximum="{x:Static sosGame:MainWindow.MaxBoardSize}"  />
 
         </StackPanel>
-
-        <!-- TODO Maybe change the radio button IsCheckedChanged to bindings with InvertedBooleanConverter and a single backing boolean value -->
 
         <!-- LeftPlayer -->
         <StackPanel Grid.Row="1" Grid.Column="0"

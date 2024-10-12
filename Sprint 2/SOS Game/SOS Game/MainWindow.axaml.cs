@@ -12,13 +12,19 @@ namespace SOS_Game;
 
 public partial class MainWindow : Window
 {
+    // Constants //
+    
     // These *must* be public for ui binding to take place
     public const decimal MinBoardSize = 3;
     public const decimal MaxBoardSize = 20;
-
+    
+    
+    // Variables //
 
     private int currentBoardSize;
     
+    
+    // Constructor //
     public MainWindow()
     {
         InitializeComponent();
@@ -26,6 +32,8 @@ public partial class MainWindow : Window
 
         currentBoardSize = GetBoardSizeInput();
     }
+    
+    // Getters //
 
     private int GetBoardSizeInput()
     {
@@ -58,67 +66,8 @@ public partial class MainWindow : Window
         return button;
     }
     
-    // DEBUG example function for using tag data
-    // <Button Content="Click Me" Tag="Some Arbitrary Data" Click="Button_Click" />
-    private void TokenButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (sender is Button button)
-        {
-            var tagValue = button.Tag; // Access the Tag property
-            // Use the tagValue as needed
-            Console.WriteLine(tagValue); // Outputs: Some Arbitrary Data
-        }
-    }
-
-    private void ClickTile(object? sender, RoutedEventArgs e)
-    {
-        if (sender is not Button button)
-        {
-            Debug.WriteLine("ClickTile called but sender is not a button! Sender: " + sender);
-            return;
-        }
-
-        Console.WriteLine(sender.GetType().ToString() + button.GetType().ToString() + button.Tag);
-        
-        //TODO add turn and tile placement functionality
-        
-    }
-
-    private void ClickNewGameButton(object? sender, RoutedEventArgs e)
-    {
-
-        //Get board size
-        var boardSize = currentBoardSize = GetBoardSizeInput();
-        var newTiles = new List<Button>(boardSize);
-        
-        //TODO Clean up event handler leaks in 
-        // GameBoardGrid.Children.CollectionChanged
-        // GameBoardGrid.SizeChanged
-
-        //Generate new tiles
-        for (int i = 0; i < Math.Pow(boardSize, 2); i++)
-        {
-            var tile = GetNewTile(TileType.None);
-            
-            //Set position on board
-            // tile!.Child!.Tag = new Position(i / boardSize, i % boardSize);
-            Grid.SetRow(tile, i / boardSize);
-            Grid.SetColumn(tile, i % boardSize);
-
-            // Set tile size to remain square
-            var gridSize = Math.Min(GameBoarder.Bounds.Width, GameBoarder.Bounds.Height);
-            tile.Width = tile.Height = gridSize / boardSize;
-            
-            newTiles.Add(tile);
-        }
-        
-        
-        //Clear existing board UI
-        GameBoardGrid.Children.Clear();
-        
-        //Add new tiles to boardUI
-        GameBoardGrid.Children.AddRange(newTiles);
-    }
+    
+    // Event handlers //
 
     private void OnWindowSizeChanged(object? sender, SizeChangedEventArgs e)
     {
@@ -137,5 +86,50 @@ public partial class MainWindow : Window
                 tile.Width = tile.Height = gridSize / currentBoardSize;
             }
         }
+    }
+    
+    
+    // UI Logic //
+    
+    private void ClickTile(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not Button button)
+        {
+            Debug.WriteLine("ClickTile called but sender is not a button! Sender: " + sender);
+            return;
+        }
+
+        Console.WriteLine(sender.GetType().ToString() + button.GetType().ToString() + button.Tag);
+        
+        //TODO add turn and tile placement functionality
+        
+    }
+
+    private void ClickNewGameButton(object? sender, RoutedEventArgs e)
+    {
+        //Setup
+        var boardSize = currentBoardSize = GetBoardSizeInput();
+        var newTiles = new List<Button>(boardSize);
+
+        //Generate new tiles
+        for (int i = 0; i < Math.Pow(boardSize, 2); i++)
+        {
+            var tile = GetNewTile(TileType.None);
+            
+            //Set position on board
+            // tile!.Child!.Tag = new Position(i / boardSize, i % boardSize);
+            Grid.SetRow(tile, i / boardSize);
+            Grid.SetColumn(tile, i % boardSize);
+
+            // Set tile size to remain square
+            var gridSize = Math.Min(GameBoarder.Bounds.Width, GameBoarder.Bounds.Height);
+            tile.Width = tile.Height = gridSize / boardSize;
+            
+            newTiles.Add(tile);
+        }
+        
+        //Clear and update board UI
+        GameBoardGrid.Children.Clear();
+        GameBoardGrid.Children.AddRange(newTiles);
     }
 }
