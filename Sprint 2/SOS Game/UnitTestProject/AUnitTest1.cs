@@ -1,6 +1,8 @@
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
+using SOS_Game;
 
 namespace UnitTestProject;
 
@@ -28,5 +30,21 @@ public class AUnitTest1
 
         // Assert:
         Assert.Equal("Hello World", textBox.Text);
+    }
+
+
+    [AvaloniaFact]
+    public void TestTest()
+    {
+        // Instantiate the game window
+        var window = new MainWindow();
+            
+        // Ensure the window is properly initialized
+        window.Show();
+
+        // Find controls by name
+        var gameBoard = window.FindControl<UniformGrid>("GameBoardGrid");
+        
+        Assert.NotNull(gameBoard);
     }
 }
