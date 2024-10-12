@@ -82,8 +82,7 @@
             New game
         </Button>
 
-        
-            <!-- TODO generate the contents of the following board through code -->
+        <!-- Game Board -->
         <Border Name="GameBoarder" Grid.Row="1" Grid.Column="1"
                 BorderBrush="White" BorderThickness="0">
                 <UniformGrid x:Name="GameBoardGrid" Grid.Row="1" Grid.Column="1"
@@ -98,11 +97,6 @@
                 </UniformGrid>
         </Border>
 
-
-        <!-- </Viewbox> -->
-
-
     </Grid>
-
 
 </Window>
