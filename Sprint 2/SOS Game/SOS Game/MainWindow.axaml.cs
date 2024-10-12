@@ -24,27 +24,7 @@ public partial class MainWindow : Window
 
     private Button GetNewTile(TileType tileType)
     {
-        /*// tileElement for reuse in the board
-        Border tileElement = new Border
-        {
-            BorderThickness = new Thickness(0.5),
-            BorderBrush = Brushes.Black,
-            Child = new Button
-            {
-                Content = "", // Button content
-                // FontSize = 35, // Font size of the button text
-                Background = Brushes.Gray, // Background color of the button
-                HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Center,
-                VerticalContentAlignment = Avalonia.Layout.VerticalAlignment.Center,
-                // HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
-                // VerticalAlignment = Avalonia.Layout.VerticalAlignment.Stretch,
-                CornerRadius = new CornerRadius(0), // No rounded corners
-                Padding = new Thickness(0), // No padding
-                Margin = new Thickness(0), // No margin
-                BorderThickness = new Thickness(0), // No border on the button
-            }
-        };*/
-
+        // tileElement for reuse in the board
         var button = new Button
         {
             Content = "", // Button content
@@ -64,25 +44,6 @@ public partial class MainWindow : Window
         // Set letter of tile
         if(tileType != TileType.None)
             button.Content = Enum.GetName<TileType>(tileType);
-        //     ((Button)tileElement.Child).Content = Enum.GetName<TileType>(tileType);
-        /*switch (tileType)
-        {
-            default:
-            case TileType.None:
-                break;
-            case TileType.S:
-                ((Button)tileElement.Child).Content = Enum.GetName<TileType>(tileType);
-                break;
-            case TileType.O:
-                ((Button)tileElement.Child).Content = Enum.GetName<TileType>(tileType);
-                break;
-        }*/
-        
-        // Add click event function
-        // ((Button)tileElement.Child).Click += ClickTile;
-
-        // return (Control)tileElement.Child;
-        // return tileElement;
 
         return button;
     }
@@ -150,18 +111,8 @@ public partial class MainWindow : Window
         //Clear existing board UI
         GameBoardGrid.Children.Clear();
         
-        // Update board size
-        // GameBoardGrid
-        // GameBoardGrid.ColumnDefinitions.Clear();
-        // GameBoardGrid.RowDefinitions.Clear();
-        // GameBoardGrid.ColumnDefinitions.AddRange(Enumerable.Repeat(new ColumnDefinition(GridLength.Star), boardSize));
-        // GameBoardGrid.RowDefinitions.AddRange(Enumerable.Repeat(new RowDefinition(GridLength.Star), boardSize));
-        
         //Add new tiles to boardUI
         GameBoardGrid.Children.AddRange(newTiles);
-        
-        
-        
     }
 
     private void OnWindowSizeChanged(object? sender, SizeChangedEventArgs e)
