@@ -13,3 +13,9 @@ public enum TileType
     O,
 }
 
+public enum GameType
+{
+    Simple,
+    General
+}
+

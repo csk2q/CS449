@@ -1,27 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text.Json;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using SOS_Game.Logic;
 
 namespace SOS_Game;
 
 public partial class MainWindow : Window
 {
-    // Constants //
-    
-    // These *must* be public for ui binding to take place
-    public const decimal MinBoardSize = 3;
-    public const decimal MaxBoardSize = 20;
-    
-    
     // Variables //
 
     private int currentBoardSize;
+    private GameBoard gameBoard = new(GameType.Simple, 3);
     
     
     // Constructor //
@@ -33,13 +26,20 @@ public partial class MainWindow : Window
         currentBoardSize = GetBoardSizeInput();
     }
     
-    // Getters //
+    // Getters & Setters //
 
     private int GetBoardSizeInput()
     {
-        return (int)Math.Clamp(Convert.ToInt32(BoardSizeNumericUpDown.Value), MinBoardSize, MaxBoardSize);
+        int value = (int)Math.Clamp(Convert.ToInt32(BoardSizeNumericUpDown.Value), GameBoard.MinBoardSize,
+            GameBoard.MaxBoardSize);
+        
+        //Override displayed value to show used value.
+        BoardSizeNumericUpDown.Value = (decimal)value;
+        
+        return value;
     }
 
+    // Returns a new tile for use on the board
     private Button GetNewTile(TileType tileType)
     {
         // tileElement for reuse in the board
@@ -58,12 +58,32 @@ public partial class MainWindow : Window
             BorderThickness = new Thickness(1), // No border on the button
             BorderBrush = Brushes.Red,
         };
+
+        //Click callback
+        button.Click += PlaceTile;
         
         // Set letter of tile
-        if(tileType != TileType.None)
+        if (tileType != TileType.None)
+        {
             button.Content = Enum.GetName<TileType>(tileType);
+        }
 
         return button;
+    }
+    
+    private void SetTurnText()
+    {
+        if (gameBoard.PlayerTurn == Player.BlueLeft)
+        {//BlueLeft's turn
+            TurnTextBlock.Text = "Blue's Turn";
+            TurnTextBlock.Foreground = Brushes.Blue;
+        }
+        else
+        {
+            //RedRight's turn
+            TurnTextBlock.Text = "Red's Turn";
+            TurnTextBlock.Foreground = Brushes.Red;
+        }
     }
     
     
@@ -91,24 +111,61 @@ public partial class MainWindow : Window
     
     // UI Logic //
     
-    private void ClickTile(object? sender, RoutedEventArgs e)
+    private void PlaceTile(object? sender, RoutedEventArgs e)
     {
-        if (sender is not Button button)
+        if (sender is Button button)
         {
-            Debug.WriteLine("ClickTile called but sender is not a button! Sender: " + sender);
-            return;
-        }
+            //TODO add turn and tile placement functionality
+            
+            // Variables
+            TileType tileSelection = TileType.None;
 
-        Console.WriteLine(sender.GetType().ToString() + button.GetType().ToString() + button.Tag);
-        
-        //TODO add turn and tile placement functionality
-        
+            // Get player choices
+            if (gameBoard.PlayerTurn == Player.BlueLeft)
+            {//BlueLeft's turn
+                if (BlueSChoice.IsChecked ?? true)
+                    tileSelection = TileType.S;
+                else
+                    tileSelection = TileType.O;
+            }
+            else
+            {//RedRight's turn
+                if (RedSChoice.IsChecked ?? true)
+                    tileSelection = TileType.S;
+                else
+                    tileSelection = TileType.O;
+            }
+            
+            // Try place tile
+            bool result = gameBoard.PlaceTile(Grid.GetRow(button), Grid.GetColumn(button), tileSelection);
+
+            if (result)
+            {//Tile was placed successfully
+                button.Content = Enum.GetName<TileType>(tileSelection);
+            }
+            else
+            {//Failed to place tile
+                //TODO ? show message box about tile placement failure
+                Debug.WriteLine($"Failed to place tile.");
+            }
+
+            SetTurnText();
+
+        }
+        else
+            Debug.Assert(false, "ClickTile called but sender is not a button! Sender: " + sender);
     }
 
-    private void ClickNewGameButton(object? sender, RoutedEventArgs e)
+    private void StartNewGame(object? sender, RoutedEventArgs e)
     {
-        //Setup
+        // Get input
         var boardSize = currentBoardSize = GetBoardSizeInput();
+        
+        //Default game mode is simple
+        GameType gameMode = (SimpleGameRadioButton.IsChecked ?? true) ? GameType.Simple : GameType.General;
+        
+        // Set up variables
+        gameBoard = new GameBoard(gameMode, boardSize);
         var newTiles = new List<Button>(boardSize);
 
         //Generate new tiles
@@ -121,9 +178,13 @@ public partial class MainWindow : Window
             Grid.SetRow(tile, i / boardSize);
             Grid.SetColumn(tile, i % boardSize);
 
-            // Set tile size to remain square
+            // Set tile size and maintain aspect ratio
             var gridSize = Math.Min(GameBoarder.Bounds.Width, GameBoarder.Bounds.Height);
-            tile.Width = tile.Height = gridSize / boardSize;
+            var sideLength = gridSize / boardSize;
+            tile.Width = tile.Height = sideLength;
+            
+            //Scale font size
+            tile.FontSize = sideLength * 0.80;
             
             newTiles.Add(tile);
         }
@@ -131,5 +192,11 @@ public partial class MainWindow : Window
         //Clear and update board UI
         GameBoardGrid.Children.Clear();
         GameBoardGrid.Children.AddRange(newTiles);
+        
+        SetTurnText();
     }
+    
+    
+    // Helper Functions //
+
 }
