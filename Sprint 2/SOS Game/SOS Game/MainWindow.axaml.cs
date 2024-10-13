@@ -56,7 +56,7 @@ public partial class MainWindow : Window
             Padding = new Thickness(0), // No padding
             Margin = new Thickness(0), // No margin
             BorderThickness = new Thickness(1), // No border on the button
-            BorderBrush = Brushes.Red,
+            BorderBrush = Brushes.Black,
         };
 
         //Click callback
