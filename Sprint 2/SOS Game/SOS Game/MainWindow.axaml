@@ -33,7 +33,8 @@
                     VerticalAlignment="Center" HorizontalAlignment="Right"
                     Orientation="Horizontal" Spacing="10" Margin="18">
             <TextBlock FontSize="20" VerticalAlignment="Center">Board Size: </TextBlock>
-            <NumericUpDown Name="BoardSizeNumericUpDown" FontSize="19" Value="3" Increment="1"
+            <NumericUpDown Name="BoardSizeNumericUpDown" FontSize="19" Increment="1"
+                           Value="{x:Static logic:GameBoard.DefaultBoardSize}"
                            Minimum="{x:Static logic:GameBoard.MinBoardSize}"
                            Maximum="{x:Static logic:GameBoard.MaxBoardSize}"  />
 

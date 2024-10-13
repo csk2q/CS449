@@ -8,6 +8,7 @@ public class GameBoard
     // Constants //
     
     // These *must* be public for ui binding to take place
+    public const decimal DefaultBoardSize = 3;
     public const decimal MinBoardSize = 3;
     public const decimal MaxBoardSize = 20;
     
@@ -43,8 +44,9 @@ public class GameBoard
 
     public bool PlaceTile(int row, int column, TileType tileType)
     {
-        // If position is valid AND tile is empty
-        if (row < size && column < size && board[row][column] == TileType.None)
+        if (tileType is not TileType.None // If the placing tile is S or O
+            && row < size && column < size // AND position is valid 
+            && board[row][column] == TileType.None) // AND Clicked tile is empty
         {
             // Place tile
             board[row][column] = tileType;
