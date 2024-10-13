@@ -1,7 +1,6 @@
 using System.Reflection;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
-using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
 using Avalonia.Interactivity;
 using SOS_Game;
@@ -30,7 +29,7 @@ public class ACUnitTests
             // Instantiate the game window
             var window = new MainWindow();
             window.Show();
-            
+
             // Set game mode selection
             var simpleRadioButton = window.FindControl<RadioButton>("SimpleGameRadioButton");
             Assert.NotNull(simpleRadioButton);
@@ -65,7 +64,7 @@ public class ACUnitTests
             var gameBoard = (GameBoard)gameBoardFieldInfo.GetValue(window)!;
             playerTurnProperty.SetValue(gameBoard, player);
 
-            // Simulate selecting 'S' for the player 
+            // Simulate selecting tileSelection for the player 
             RadioButton? sRadioButton = null;
             RadioButton? oRadioButton = null;
             if (player == Player.BlueLeft)
@@ -81,7 +80,7 @@ public class ACUnitTests
 
             Assert.NotNull(sRadioButton);
             Assert.NotNull(oRadioButton);
-            
+
             if (tileSelection == TileType.O)
             {
                 sRadioButton.IsChecked = false;
@@ -94,7 +93,7 @@ public class ACUnitTests
             }
 
             // Simulate a click on an empty tile (assuming the board has at least one)
-            var emptyTile = gameGrid.Children.OfType<Button>().First(b => b.Content == "");
+            var emptyTile = gameGrid.Children.OfType<Button>().First(b => (string)b.Content! == "");
             Assert.NotNull(emptyTile);
 
             // Trigger click
@@ -105,6 +104,131 @@ public class ACUnitTests
 
             // Assert that the player's turn has switched
             Assert.NotEqual(player, gameBoard.PlayerTurn);
+        }
+    }
+
+    [AvaloniaTheory]
+    [InlineData(Player.BlueLeft, TileType.S)]
+    [InlineData(Player.BlueLeft, TileType.O)]
+    [InlineData(Player.RedRight, TileType.S)]
+    [InlineData(Player.RedRight, TileType.O)]
+    public void TestTilePlacementForOccupiedTile(Player player, TileType tileSelection)
+    {
+        //Run test for both game modes
+        InnerTest(GameType.Simple);
+        InnerTest(GameType.General);
+        return;
+
+        void InnerTest(GameType gameType)
+        {
+            // Instantiate the game window
+            var window = new MainWindow();
+            window.Show();
+
+            // Set game mode selection
+            var simpleRadioButton = window.FindControl<RadioButton>("SimpleGameRadioButton");
+            Assert.NotNull(simpleRadioButton);
+            var generalRadioButton = window.FindControl<RadioButton>("GeneralGameRadioButton");
+            Assert.NotNull(generalRadioButton);
+            if (GameType.Simple == gameType)
+            {
+                simpleRadioButton.IsChecked = true;
+                generalRadioButton.IsChecked = false;
+            }
+            else if (GameType.General == gameType)
+            {
+                simpleRadioButton.IsChecked = false;
+                generalRadioButton.IsChecked = true;
+            }
+
+            // Start a new game and create game board
+            window.StartNewGame(null, new RoutedEventArgs());
+
+            // Set player turn
+            var gameBoardFieldInfo =
+                typeof(MainWindow).GetField("gameBoard", BindingFlags.NonPublic | BindingFlags.Instance);
+            var playerTurnProperty = typeof(GameBoard).GetProperty("PlayerTurn",
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            Assert.NotNull(gameBoardFieldInfo);
+            Assert.NotNull(playerTurnProperty);
+            var gameBoard = (GameBoard)gameBoardFieldInfo.GetValue(window)!;
+            playerTurnProperty.SetValue(gameBoard, player);
+
+            // Simulate selecting tileSelection for the first player 
+            RadioButton? sFirstRadioButton = null;
+            RadioButton? oFirstRadioButton = null;
+            RadioButton? sSecondRadioButton = null;
+            RadioButton? oSecondRadioButton = null;
+            if (player == Player.BlueLeft)
+            {
+                sFirstRadioButton = window.FindControl<RadioButton>("BlueSChoice");
+                oFirstRadioButton = window.FindControl<RadioButton>("BlueOChoice");
+                sSecondRadioButton = window.FindControl<RadioButton>("RedSChoice");
+                oSecondRadioButton = window.FindControl<RadioButton>("RedOChoice");
+            }
+            else if (player == Player.RedRight)
+            {
+                sFirstRadioButton = window.FindControl<RadioButton>("RedSChoice");
+                oFirstRadioButton = window.FindControl<RadioButton>("RedOChoice");
+                sSecondRadioButton = window.FindControl<RadioButton>("BlueSChoice");
+                oSecondRadioButton = window.FindControl<RadioButton>("BlueOChoice");
+            }
+
+            // Ensure we have all radio buttons 
+            Assert.NotNull(sFirstRadioButton);
+            Assert.NotNull(oFirstRadioButton);
+            Assert.NotNull(sSecondRadioButton);
+            Assert.NotNull(oSecondRadioButton);
+
+            // Set the value of the tile selection
+            if (tileSelection == TileType.O)
+            {
+                sFirstRadioButton.IsChecked = false;
+                oFirstRadioButton.IsChecked = true;
+                sSecondRadioButton.IsChecked = true;
+                oSecondRadioButton.IsChecked = false;
+            }
+            else if (tileSelection == TileType.S)
+            {
+                sFirstRadioButton.IsChecked = true;
+                oFirstRadioButton.IsChecked = false;
+                sSecondRadioButton.IsChecked = false;
+                oSecondRadioButton.IsChecked = true;
+            }
+            
+            // Ensure the game grid exists and has tiles
+            var gameGrid = window.FindControl<UniformGrid>("GameBoardGrid");
+            Assert.NotNull(gameGrid);
+            Assert.NotEmpty(gameGrid.Children);
+
+            // Simulate a click on an empty tile (assuming the board has at least one)
+            var emptyTile = gameGrid.Children.OfType<Button>().First(b => (string)b.Content! == "");
+            Assert.NotNull(emptyTile);
+
+            // Trigger click
+            emptyTile.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+
+            // Assert that the tile content is now the tileSelection
+            Assert.Equal(Enum.GetName(tileSelection), emptyTile.Content);
+
+            // Assert that the player's turn has switched
+            Assert.NotEqual(player, gameBoard.PlayerTurn);
+
+            // Trigger click to try to place on that tile again
+            emptyTile.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+
+            // Ensure that the tile selection is unchanged
+            Assert.Equal(Enum.GetName(tileSelection), emptyTile.Content);
+            
+            // Verify that it is still the second player's turn
+            if (player == Player.BlueLeft)
+            {
+                Assert.Equal(Player.RedRight, playerTurnProperty.GetValue(gameBoard));
+            }
+            else if (player == Player.RedRight)
+            {
+                Assert.Equal(Player.BlueLeft, playerTurnProperty.GetValue(gameBoard));
+            }
         }
     }
 
@@ -258,7 +382,7 @@ public class ACUnitTests
         Assert.NotNull(boardSizeNumericUpDownInfo);
         var sizeValueInfo = typeof(NumericUpDown).GetProperty("Value", BindingFlags.Public | BindingFlags.Instance);
         Assert.NotNull(sizeValueInfo);
-        var startingSize = (decimal)sizeValueInfo.GetValue(boardSizeNumericUpDownInfo.GetValue(window));
+        var startingSize = (decimal)sizeValueInfo.GetValue(boardSizeNumericUpDownInfo.GetValue(window))!;
 
         //Set the board size of BoardSizeNumericUpDown.Value
         decimal newSize = 9;
@@ -329,7 +453,6 @@ public class ACUnitTests
         var gameBoard = (GameBoard)gameBoardFieldInfo.GetValue(window)!;
         Assert.Equal(gameType, gameTypeInfo.GetValue(gameBoard));
     }
-    
 
 
     [AvaloniaTheory]
@@ -359,7 +482,7 @@ public class ACUnitTests
 
         // Start a new game and create game board
         window.StartNewGame(null, new RoutedEventArgs());
-        
+
         // Get player turn variable
         var gameBoardFieldInfo =
             typeof(MainWindow).GetField("gameBoard", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -368,7 +491,7 @@ public class ACUnitTests
         Assert.NotNull(gameBoardFieldInfo);
         Assert.NotNull(playerTurnProperty);
         var gameBoard = (GameBoard)gameBoardFieldInfo.GetValue(window)!;
-        
+
         //Check that it is Blue/Left Player's turn
         Assert.Equal(Player.BlueLeft, playerTurnProperty.GetValue(gameBoard));
     }
