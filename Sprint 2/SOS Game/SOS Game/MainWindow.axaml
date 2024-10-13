@@ -93,8 +93,8 @@
                              Margin="0" SizeChanged="GameBoardGrid_OnSizeChanged">
                     
                         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Background="Gray">
-                        <TextBlock FontSize="19" TextAlignment="Center">Choose your settings,</TextBlock>
-                        <TextBlock FontSize="19" TextAlignment="Center"> then press New Game to start!</TextBlock>
+                        <TextBlock FontSize="19" HorizontalAlignment="Center">Choose your settings,</TextBlock>
+                        <TextBlock FontSize="19" HorizontalAlignment="Center">then press New Game to start!</TextBlock>
                     </StackPanel>
                     
                 </UniformGrid>
