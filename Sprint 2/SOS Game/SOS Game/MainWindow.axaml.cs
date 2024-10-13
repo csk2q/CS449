@@ -34,7 +34,7 @@ public partial class MainWindow : Window
             GameBoard.MaxBoardSize);
         
         //Override displayed value to show used value.
-        BoardSizeNumericUpDown.Value = (decimal)value;
+        BoardSizeNumericUpDown.Value = value;
         
         return value;
     }
@@ -65,13 +65,13 @@ public partial class MainWindow : Window
         // Set letter of tile
         if (tileType != TileType.None)
         {
-            button.Content = Enum.GetName<TileType>(tileType);
+            button.Content = Enum.GetName(tileType);
         }
 
         return button;
     }
     
-    private void SetTurnText()
+    private void UpdateTurnText()
     {
         if (gameBoard.PlayerTurn == Player.BlueLeft)
         {//BlueLeft's turn
@@ -115,10 +115,8 @@ public partial class MainWindow : Window
     {
         if (sender is Button button)
         {
-            //TODO add turn and tile placement functionality
-            
             // Variables
-            TileType tileSelection = TileType.None;
+            TileType tileSelection;
 
             // Get player choices
             if (gameBoard.PlayerTurn == Player.BlueLeft)
@@ -141,7 +139,7 @@ public partial class MainWindow : Window
 
             if (result)
             {//Tile was placed successfully
-                button.Content = Enum.GetName<TileType>(tileSelection);
+                button.Content = Enum.GetName(tileSelection);
             }
             else
             {//Failed to place tile
@@ -149,8 +147,7 @@ public partial class MainWindow : Window
                 Debug.WriteLine($"Failed to place tile.");
             }
 
-            SetTurnText();
-
+            UpdateTurnText();
         }
         else
             Debug.Assert(false, "ClickTile called but sender is not a button! Sender: " + sender);
@@ -184,7 +181,8 @@ public partial class MainWindow : Window
             tile.Width = tile.Height = sideLength;
             
             //Scale font size
-            tile.FontSize = sideLength * 0.80;
+            const double percentageOfTile = 0.80;
+            tile.FontSize = sideLength * percentageOfTile;
             
             newTiles.Add(tile);
         }
@@ -193,7 +191,7 @@ public partial class MainWindow : Window
         GameBoardGrid.Children.Clear();
         GameBoardGrid.Children.AddRange(newTiles);
         
-        SetTurnText();
+        UpdateTurnText();
     }
     
     
