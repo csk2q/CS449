@@ -11,6 +11,8 @@ namespace SOS_Game;
 
 public partial class MainWindow : Window
 {
+    // Note: Several functions & variables have been made public to allow for unit testing
+    
     // Variables //
 
     private int currentBoardSize;
@@ -153,7 +155,7 @@ public partial class MainWindow : Window
             Debug.Assert(false, "ClickTile called but sender is not a button! Sender: " + sender);
     }
 
-    private void StartNewGame(object? sender, RoutedEventArgs e)
+    public void StartNewGame(object? sender, RoutedEventArgs e)
     {
         // Get input
         var boardSize = currentBoardSize = GetBoardSizeInput();

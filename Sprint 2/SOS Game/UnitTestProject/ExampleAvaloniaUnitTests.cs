@@ -6,7 +6,7 @@ using SOS_Game;
 
 namespace UnitTestProject;
 
-public class AUnitTest1
+public class ExampleAvaloniaUnitTests
 {
     /*
      * Instead of the typical [Fact] attribute, we need to use [AvaloniaFact] as it sets up the UI thread. Similarly, instead of [Theory], there is a [AvaloniaTheory] attribute.
