@@ -400,13 +400,23 @@ public class ACUnitTests
         var gameBoardField = typeof(MainWindow).GetField("gameBoard", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
         var currentBoardSizeField = typeof(MainWindow).GetField("currentBoardSize", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
         
+        // Check our references are valid
+        Assert.NotNull(gameBoardField);
+        Assert.NotNull(currentBoardSizeField);
+        
         // Get the gameBoard object and currentBoardSize
-        var gameBoard = gameBoardField.GetValue(window);
-        var currentBoardSize = (int)currentBoardSizeField.GetValue(window); // Cast currentBoardSize to int
+        var gameBoard = (GameBoard?)gameBoardField.GetValue(window);
+        var currentBoardSize = (int?)currentBoardSizeField.GetValue(window)!; // Cast currentBoardSize to int
+        
+        // Check the values are not null
+        Assert.NotNull(gameBoard);
+        Assert.NotNull(currentBoardSize);
 
         // Access the GameBoard size field using reflection
         var sizeField = gameBoard.GetType().GetField("size", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        var gameBoardSize = (int)sizeField.GetValue(gameBoard); // Cast size to int
+        Assert.NotNull(sizeField);
+        var gameBoardSize = (int?)sizeField.GetValue(gameBoard); // Cast size to int
+        Assert.NotNull(sizeField);
 
         // Assert that the currentBoardSize and gameBoardSize are equal to the default size
         int defaultSize = (int)GameBoard.DefaultBoardSize; // Cast DefaultBoardSize to int
