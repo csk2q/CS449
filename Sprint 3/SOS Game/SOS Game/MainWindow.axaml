@@ -1,0 +1,105 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:sosGame="clr-namespace:SOS_Game"
+        xmlns:logic="clr-namespace:SOS_Game.Logic"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="SOS_Game.MainWindow"
+        x:DataType="sosGame:MainWindow"
+        Title="SOS Game"
+        SizeChanged="OnWindowSizeChanged">
+    <!-- xmlns:converters="clr-namespace:SOS_Game.Converters" -->
+    <Window.Resources>
+        <!-- <converters:InvertedBooleanConverter x:Key="InvertedBooleanConverter"/> -->
+    </Window.Resources>
+    
+
+    <Grid ColumnDefinitions="*,2*,*" RowDefinitions="*,3.3*,*" ShowGridLines="False">
+
+        <!-- Game mode picker -->
+        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                    VerticalAlignment="Center" HorizontalAlignment="Left"
+                    Orientation="Horizontal" Spacing="10" Margin="18">
+
+            <TextBlock FontSize="30">SOS</TextBlock>
+            <RadioButton Name="SimpleGameRadioButton" FontSize="25" IsChecked="True">Simple Game</RadioButton>
+            <RadioButton Name="GeneralGameRadioButton" FontSize="25" IsChecked="False">General Game</RadioButton>
+
+        </StackPanel>
+
+        <!-- Board size control -->
+        <StackPanel Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
+                    VerticalAlignment="Center" HorizontalAlignment="Right"
+                    Orientation="Horizontal" Spacing="10" Margin="18">
+            <TextBlock FontSize="20" VerticalAlignment="Center">Board Size: </TextBlock>
+            <NumericUpDown Name="BoardSizeNumericUpDown" FontSize="19" Increment="1"
+                           Value="{x:Static logic:GameBoard.DefaultBoardSize}"
+                           Minimum="{x:Static logic:GameBoard.MinBoardSize}"
+                           Maximum="{x:Static logic:GameBoard.MaxBoardSize}"  />
+
+        </StackPanel>
+
+        <!-- LeftPlayer -->
+        <StackPanel Grid.Row="1" Grid.Column="0"
+                    HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock FontSize="25">Blue Player</TextBlock>
+
+            <RadioButton GroupName="BluePlayerTileChoice" Name="BlueSChoice" FontSize="20" IsChecked="True">
+                S
+            </RadioButton>
+            <RadioButton GroupName="BluePlayerTileChoice" Name="BlueOChoice" FontSize="20" IsChecked="False">
+                O
+            </RadioButton>
+        </StackPanel>
+
+        <!-- Right Player -->
+        <StackPanel Grid.Row="1" Grid.Column="2"
+                    HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock FontSize="25">Red Player</TextBlock>
+
+            <RadioButton GroupName="RedPlayerTileChoice" Name="RedSChoice" FontSize="20" IsChecked="True">
+                S
+            </RadioButton>
+            <RadioButton GroupName="RedPlayerTileChoice" Name="RedOChoice" FontSize="20" IsChecked="False">
+                O
+            </RadioButton>
+
+        </StackPanel>
+
+        <!-- Board size control -->
+        <StackPanel Grid.Row="2" Grid.Column="1"
+                    VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Orientation="Horizontal" Spacing="5">
+
+            <!-- TODO hook up to the backing logic -->
+            <TextBlock FontSize="20" VerticalAlignment="Center">It is</TextBlock>
+            <TextBlock Name="TurnTextBlock" FontSize="20" VerticalAlignment="Center">???'s turn.</TextBlock>
+
+        </StackPanel>
+
+        <!-- New Game Button -->
+        <Button Grid.Row="2" Grid.Column="2"
+                HorizontalAlignment="Center" VerticalAlignment="Center"
+                FontSize="17" Click="StartNewGame">
+            New game
+        </Button>
+
+        <!-- Game Board -->
+        <Border Name="GameBoarder" Grid.Row="1" Grid.Column="1"
+                BorderBrush="White" BorderThickness="0">
+                <UniformGrid x:Name="GameBoardGrid" Grid.Row="1" Grid.Column="1"
+                             HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                             Margin="0" SizeChanged="GameBoardGrid_OnSizeChanged">
+                    
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Background="Gray">
+                        <TextBlock FontSize="19" HorizontalAlignment="Center">Choose your settings,</TextBlock>
+                        <TextBlock FontSize="19" HorizontalAlignment="Center">then press New Game to start!</TextBlock>
+                    </StackPanel>
+                    
+                </UniformGrid>
+        </Border>
+
+    </Grid>
+
+</Window>
