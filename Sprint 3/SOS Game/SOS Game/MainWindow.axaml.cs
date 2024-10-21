@@ -119,9 +119,10 @@ public partial class MainWindow : Window
         {
             // Variables
             TileType tileSelection;
+            var placingPlayer = gameBoard.PlayerTurn;
 
             // Get player choices
-            if (gameBoard.PlayerTurn == Player.BlueLeft)
+            if (placingPlayer == Player.BlueLeft)
             {//BlueLeft's turn
                 if (BlueSChoice.IsChecked ?? true)
                     tileSelection = TileType.S;
@@ -137,17 +138,58 @@ public partial class MainWindow : Window
             }
             
             // Try place tile
-            bool result = gameBoard.PlaceTile(Grid.GetRow(button), Grid.GetColumn(button), tileSelection);
+            bool result = gameBoard.PlaceTile(Grid.GetRow(button), Grid.GetColumn(button), tileSelection, out Sos[] completedSosArray);
+
+            // TODO Change to colored lines
+            // Color background of buttons in sos
+            foreach (var control in GameBoardGrid.Children)
+            {
+                if (control is Button curTile)
+                {
+                    var row = Grid.GetRow(curTile);
+                    var col = Grid.GetColumn(curTile);
+                    
+                    foreach (var (s1, o, s2) in completedSosArray)
+                    {
+                        if ((s1.row == row && s1.column == col)
+                            || (o.row == row && o.column == col)
+                            || (s2.row == row && s2.column == col))
+                        {
+                            // Color letter based on player turn
+                            if (placingPlayer == Player.BlueLeft)
+                                curTile.Background = Brushes.DarkBlue;
+                            else
+                                curTile.Background = Brushes.DarkRed;
+                        }
+                        
+                    }
+                }
+            }
 
             if (result)
             {//Tile was placed successfully
+                // Color letter based on player turn
+                if (placingPlayer == Player.BlueLeft)
+                    button.Foreground = Brushes.Blue;
+                else
+                    button.Foreground = Brushes.Red;
+                
+                // Set tile letter
                 button.Content = Enum.GetName(tileSelection);
+                
+                
+                
+                
+                
             }
             else
             {//Failed to place tile
                 //TODO ? show message box about tile placement failure
                 Debug.WriteLine($"Failed to place tile.");
             }
+            
+            // Check for game completion based on Simple/General game mode
+            
 
             UpdateTurnText();
         }
@@ -164,6 +206,7 @@ public partial class MainWindow : Window
         GameType gameMode = (SimpleGameRadioButton.IsChecked ?? true) ? GameType.Simple : GameType.General;
         
         // Set up variables
+        // TODO add Simple/General game mode selection for class installation
         gameBoard = new GameBoard(gameMode, boardSize);
         var newTiles = new List<Button>(boardSize);
 
