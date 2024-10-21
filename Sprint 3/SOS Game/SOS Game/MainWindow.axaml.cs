@@ -16,7 +16,7 @@ public partial class MainWindow : Window
     // Variables //
 
     private int currentBoardSize;
-    private GameBoard gameBoard = new(GameType.Simple, 3);
+    private GameBoard gameBoard;
     
     
     // Constructor //
@@ -205,11 +205,14 @@ public partial class MainWindow : Window
         //Default game mode is simple
         GameType gameMode = (SimpleGameRadioButton.IsChecked ?? true) ? GameType.Simple : GameType.General;
         
-        // Set up variables
-        // TODO add Simple/General game mode selection for class installation
-        gameBoard = new GameBoard(gameMode, boardSize);
+        //Set up variables
         var newTiles = new List<Button>(boardSize);
-
+        
+        if (gameMode == GameType.Simple)
+            gameBoard = new SimpleGame(boardSize);
+        else
+            gameBoard = new GeneralGame(boardSize);
+        
         //Generate new tiles
         for (int i = 0; i < Math.Pow(boardSize, 2); i++)
         {

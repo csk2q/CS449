@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SOS_Game.Logic;
 
-public class GameBoard
+public abstract class GameBoard
 {
     // Constants //
 
@@ -21,30 +21,33 @@ public class GameBoard
 
     // Private Variables //
 
-    private GameType gameType;
-    private readonly int size;
+    protected readonly int size;
 
     // (Row, Column) 0,0 is top left.
     private TileType[][] board;
 
-    record Turn(Player Player, Position Position, TileType TileType);
+    protected record Turn(Player Player, Position Position, TileType TileType);
 
-    private List<Turn> turnRecord = [];
+    protected List<Turn> turnRecord = [];
 
 
     // Constructor //
-    public GameBoard(GameType gameType, int size)
+    public GameBoard(int size)
     {
         //Set variables
         this.size = (int)Math.Clamp(size, MinBoardSize, MaxBoardSize);
-        ;
-        this.gameType = gameType;
 
         // Generate board
         board = new TileType[size][];
         for (int i = 0; i < size; i++)
             board[i] = new TileType[size];
     }
+    
+    // Abstract functions //
+
+    public abstract GameType GetGameType();
+    public abstract bool isGameOver();
+    
     
     // Getters/Setters & Helpers //
 
@@ -54,6 +57,12 @@ public class GameBoard
             return board[row][column];
         else
             return TileType.None;
+    }
+
+    public bool IsBoardFilled()
+    {
+        // Check if board is filled
+        return turnRecord.Count >= size * size;
     }
     
     // Business Functions //
@@ -81,13 +90,6 @@ public class GameBoard
             //Todo if an SOS was made do NOT change the turn
             PlayerTurn = PlayerTurn == Player.BlueLeft ? Player.RedRight : Player.BlueLeft;
 
-            // Check if board is filled
-            if (turnRecord.Count >= size * size)
-            {
-                Console.Beep();
-                Console.WriteLine("Game Over!");
-            }
-
             // Tile was placed
             return true;
         }
@@ -110,6 +112,7 @@ public class GameBoard
                 break;
             case TileType.S:
             {
+                // TODO add check for when S is placed
                 break;
             }
 
@@ -153,4 +156,5 @@ public class GameBoard
 
         return newSOSes.ToArray();
     }
+    
 }
