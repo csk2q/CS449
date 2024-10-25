@@ -9,5 +9,5 @@ public class GeneralGame : GameBoard
 
     public override GameType GetGameType() => GameType.General;
 
-    public override bool isGameOver() => IsBoardFilled();
+    public override bool IsGameOver() => IsBoardFilled();
 }

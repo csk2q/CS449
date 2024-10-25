@@ -1,6 +1,8 @@
+using System;
+
 namespace SOS_Game.Logic;
 
-public class SimpleGame : GameBoard
+public sealed class SimpleGame : GameBoard
 {
     public SimpleGame(int size) : base(size)
     {
@@ -9,11 +11,9 @@ public class SimpleGame : GameBoard
 
     public override GameType GetGameType() => GameType.Simple;
 
-    public override bool isGameOver()
+    public override bool IsGameOver()
     {
-        // Override placement function and count SOSes?
-        // Or count scores in the base class?
-        
-        throw new System.NotImplementedException();
+        Console.WriteLine("Simple Game Over");
+        return BlueScore > 0 || RedScore > 0;
     }
 }
