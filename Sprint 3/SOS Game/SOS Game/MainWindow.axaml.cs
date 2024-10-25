@@ -16,7 +16,7 @@ public partial class MainWindow : Window
     // Variables //
 
     private int currentBoardSize;
-    private GameBoard gameBoard;
+    private GameBoard gameBoard = new SimpleGame(0);
     
     
     // Constructor //
@@ -25,12 +25,12 @@ public partial class MainWindow : Window
         InitializeComponent();
         DataContext = this;
 
-        currentBoardSize = GetBoardSizeInput();
+        currentBoardSize = getBoardSizeInput();
     }
     
     // Getters & Setters //
 
-    private int GetBoardSizeInput()
+    private int getBoardSizeInput()
     {
         int value = (int)Math.Clamp(Convert.ToInt32(BoardSizeNumericUpDown.Value), GameBoard.MinBoardSize,
             GameBoard.MaxBoardSize);
@@ -42,7 +42,7 @@ public partial class MainWindow : Window
     }
 
     // Returns a new tile for use on the board
-    private Button GetNewTile(TileType tileType)
+    private Button getNewTile(TileType tileType)
     {
         // tileElement for reuse in the board
         var button = new Button
@@ -62,7 +62,7 @@ public partial class MainWindow : Window
         };
 
         //Click callback
-        button.Click += PlaceTile;
+        button.Click += placeTile;
         
         // Set letter of tile
         if (tileType != TileType.None)
@@ -73,7 +73,7 @@ public partial class MainWindow : Window
         return button;
     }
     
-    private void UpdateTurnText()
+    private void updateTurnText()
     {
         if (gameBoard.PlayerTurn == Player.BlueLeft)
         {//BlueLeft's turn
@@ -113,7 +113,7 @@ public partial class MainWindow : Window
     
     // UI Logic //
     
-    private void PlaceTile(object? sender, RoutedEventArgs e)
+    private void placeTile(object? sender, RoutedEventArgs e)
     {
         if (sender is Button button)
         {
@@ -191,7 +191,7 @@ public partial class MainWindow : Window
             // Check for game completion based on Simple/General game mode
             
 
-            UpdateTurnText();
+            updateTurnText();
         }
         else
             Debug.Assert(false, "ClickTile called but sender is not a button! Sender: " + sender);
@@ -200,7 +200,7 @@ public partial class MainWindow : Window
     public void StartNewGame(object? sender, RoutedEventArgs e)
     {
         // Get input
-        var boardSize = currentBoardSize = GetBoardSizeInput();
+        var boardSize = currentBoardSize = getBoardSizeInput();
         
         //Default game mode is simple
         GameType gameMode = (SimpleGameRadioButton.IsChecked ?? true) ? GameType.Simple : GameType.General;
@@ -216,7 +216,7 @@ public partial class MainWindow : Window
         //Generate new tiles
         for (int i = 0; i < Math.Pow(boardSize, 2); i++)
         {
-            var tile = GetNewTile(TileType.None);
+            var tile = getNewTile(TileType.None);
             
             //Set position on board
             Grid.SetRow(tile, i / boardSize);
@@ -238,7 +238,7 @@ public partial class MainWindow : Window
         GameBoardGrid.Children.Clear();
         GameBoardGrid.Children.AddRange(newTiles);
         
-        UpdateTurnText();
+        updateTurnText();
     }
     
     
