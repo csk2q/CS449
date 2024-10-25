@@ -45,13 +45,13 @@ public abstract class GameBoard
         for (int i = 0; i < size; i++)
             board[i] = new TileType[size];
     }
-    
+
     // Abstract functions //
 
     public abstract GameType GetGameType();
     public abstract bool IsGameOver();
-    
-    
+
+
     // Getters/Setters & Helpers //
 
     private TileType getTile(int row, int column)
@@ -67,7 +67,7 @@ public abstract class GameBoard
         // Check if board is filled
         return turnRecord.Count >= size * size;
     }
-    
+
     // Business Functions //
 
     public bool PlaceTile(int row, int column, TileType tileType, out Sos[] completedSosArray)
@@ -83,7 +83,7 @@ public abstract class GameBoard
             turnRecord.Add(new Turn(PlayerTurn, new Position(row, column), tileType));
 
             //TODO check for SOS
-            completedSosArray = checkSOS(row, column);
+            completedSosArray = checkSos(row, column);
             foreach (var (s1, o, s2) in completedSosArray)
                 Console.WriteLine($"SOS created for {tileType} at ({s1}, {o}, {s2})");
 
@@ -124,30 +124,100 @@ public abstract class GameBoard
         return false;
     }
 
-    Sos[] checkSOS(int row, int column)
+    Sos[] checkSos(int row, int column)
     {
         var placedTile = board[row][column];
-        List<Sos> newSOSes = [];
+        List<Sos> newSoSes = [];
 
+        // Switch on tile type, either S or O
         switch (placedTile)
         {
-            default:
+            // Empty or invalid tile
             case TileType.None:
-                // Pointed at an empty tile
+            default:
+                // Do nothing
                 break;
+
+            // S tile was placed
             case TileType.S:
             {
-                // TODO add check for when S is placed
+                // Check vertical up
+                if (getTile(row, column - 1) == TileType.O
+                    && getTile(row, column - 2) == TileType.S)
+                {
+                    newSoSes.Add(new Sos(new Position(row, column), new Position(row, column - 1),
+                        new Position(row, column - 2)));
+                }
+
+                // Check vertical down
+                if (getTile(row, column + 1) == TileType.O
+                    && getTile(row, column + 2) == TileType.S)
+                {
+                    newSoSes.Add(new Sos(new Position(row, column), new Position(row, column + 1),
+                        new Position(row, column + 2)));
+                }
+
+                // Check horizontal left
+                if (getTile(row - 1, column) == TileType.O
+                    && getTile(row - 2, column) == TileType.S)
+                {
+                    newSoSes.Add(new Sos(new Position(row, column), new Position(row - 1, column),
+                        new Position(row - 2, column)));
+                }
+
+                // Check horizontal right
+                if (getTile(row + 1, column) == TileType.O
+                    && getTile(row + 2, column) == TileType.S)
+                {
+                    newSoSes.Add(new Sos(new Position(row, column), new Position(row + 1, column),
+                        new Position(row + 2, column)));
+                }
+
+                // Check \ diagonal top-left
+                if (getTile(row - 1, column - 1) == TileType.O
+                    && getTile(row - 2, column - 2) == TileType.S)
+                {
+                    newSoSes.Add(new Sos(new Position(row, column), new Position(row - 1, column - 1),
+                        new Position(row - 2, column - 2)));
+                }
+
+                // Check \ diagonal bottom-right
+                if (getTile(row + 1, column + 1) == TileType.O
+                    && getTile(row + 2, column + 2) == TileType.S)
+                {
+                    newSoSes.Add(new Sos(new Position(row, column), new Position(row + 1, column + 1),
+                        new Position(row + 2, column + 2)));
+                }
+
+                // Check / diagonal top-right
+                if (getTile(row + 1, column - 1) == TileType.O
+                    && getTile(row + 2, column - 2) == TileType.S)
+                {
+                    newSoSes.Add(new Sos(new Position(row, column), new Position(row + 1, column - 1),
+                        new Position(row + 2, column - 2)));
+                }
+
+
+                // Check / diagonal bottom-left
+                if (getTile(row - 1, column + 1) == TileType.O
+                    && getTile(row - 2, column + 2) == TileType.S)
+                {
+                    newSoSes.Add(new Sos(new Position(row, column), new Position(row - 1, column + 1),
+                        new Position(row - 2, column + 2)));
+                }
+
+
                 break;
             }
 
+            // O tile was placed
             case TileType.O:
             {
                 // Check vertical
                 if (getTile(row - 1, column) == TileType.S
                     && getTile(row + 1, column) == TileType.S)
                 {
-                    newSOSes.Add(new Sos(new Position(row - 1, column), new Position(row, column),
+                    newSoSes.Add(new Sos(new Position(row - 1, column), new Position(row, column),
                         new Position(row + 1, column)));
                 }
 
@@ -155,7 +225,7 @@ public abstract class GameBoard
                 if (getTile(row, column - 1) == TileType.S
                     && getTile(row, column + 1) == TileType.S)
                 {
-                    newSOSes.Add(new Sos(new Position(row, column - 1), new Position(row, column),
+                    newSoSes.Add(new Sos(new Position(row, column - 1), new Position(row, column),
                         new Position(row, column + 1)));
                 }
 
@@ -163,7 +233,7 @@ public abstract class GameBoard
                 if (getTile(row - 1, column - 1) == TileType.S
                     && getTile(row + 1, column + 1) == TileType.S)
                 {
-                    newSOSes.Add(new Sos(new Position(row - 1, column - 1), new Position(row, column),
+                    newSoSes.Add(new Sos(new Position(row - 1, column - 1), new Position(row, column),
                         new Position(row + 1, column + 1)));
                 }
 
@@ -171,7 +241,7 @@ public abstract class GameBoard
                 if (getTile(row - 1, column + 1) == TileType.S
                     && getTile(row + 1, column - 1) == TileType.S)
                 {
-                    newSOSes.Add(new Sos(new Position(row - 1, column + 1), new Position(row, column),
+                    newSoSes.Add(new Sos(new Position(row - 1, column + 1), new Position(row, column),
                         new Position(row + 1, column - 1)));
                 }
 
@@ -179,6 +249,6 @@ public abstract class GameBoard
             }
         }
 
-        return newSOSes.ToArray();
+        return newSoSes.ToArray();
     }
 }
