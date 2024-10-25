@@ -46,7 +46,7 @@ public abstract class GameBoard
     // Abstract functions //
 
     public abstract GameType GetGameType();
-    public abstract bool isGameOver();
+    public abstract bool IsGameOver();
     
     
     // Getters/Setters & Helpers //
@@ -82,7 +82,6 @@ public abstract class GameBoard
             //TODO check for SOS
             completedSosArray = checkSOS(row, column);
             foreach (var (s1, o, s2) in completedSosArray)
-            {
                 Console.WriteLine($"SOS created for {tileType} at ({s1}, {o}, {s2})");
             }
 
@@ -147,7 +146,7 @@ public abstract class GameBoard
                     && getTile(row + 1, column - 1) == TileType.S)
                 {
                     newSOSes.Add(new Sos(new Position(row - 1, column + 1), new Position(row, column),
-                        new Position(row + 1, column - 1 )));
+                        new Position(row + 1, column - 1)));
                 }
 
                 break;
@@ -156,5 +155,4 @@ public abstract class GameBoard
 
         return newSOSes.ToArray();
     }
-    
 }
