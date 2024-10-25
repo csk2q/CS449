@@ -18,6 +18,9 @@ public abstract class GameBoard
     // Blue goes first
     // TODO allow setting who plays first?
     public Player PlayerTurn { get; private set; } = Player.BlueLeft;
+    public int BlueScore { get; private set; } = 0;
+    public int RedScore { get; private set; } = 0;
+
 
     // Private Variables //
 
@@ -83,11 +86,34 @@ public abstract class GameBoard
             completedSosArray = checkSOS(row, column);
             foreach (var (s1, o, s2) in completedSosArray)
                 Console.WriteLine($"SOS created for {tileType} at ({s1}, {o}, {s2})");
-            }
 
-            // Change turn
-            //Todo if an SOS was made do NOT change the turn
-            PlayerTurn = PlayerTurn == Player.BlueLeft ? Player.RedRight : Player.BlueLeft;
+
+            // If one or more SOSes were made
+            if (completedSosArray.Length > 0)
+            {
+                // Add score
+                switch (PlayerTurn)
+                {
+                    case Player.BlueLeft:
+                        BlueScore += 1;
+                        break;
+                    case Player.RedRight:
+                        RedScore += 1;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException("Unknown player turn: " + PlayerTurn);
+                }
+            }
+            else // No SOSes were made
+            {
+                // Change turn
+                PlayerTurn = PlayerTurn switch
+                {
+                    Player.BlueLeft => Player.RedRight,
+                    Player.RedRight => Player.BlueLeft,
+                    _ => throw new ArgumentOutOfRangeException("Unknown player turn: " + PlayerTurn)
+                };
+            }
 
             // Tile was placed
             return true;
