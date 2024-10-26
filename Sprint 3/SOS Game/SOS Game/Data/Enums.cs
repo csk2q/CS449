@@ -2,6 +2,7 @@ namespace SOS_Game;
 
 public enum Player
 {
+    None,
     BlueLeft,
     RedRight,
 }
