@@ -68,10 +68,30 @@ public abstract class GameBoard
         return turnRecord.Count >= size * size;
     }
 
+    public Player GetWinner()
+    {
+        if (IsGameOver())
+            if (BlueScore > RedScore)
+                return Player.BlueLeft;
+            else if (RedScore > BlueScore)
+                return Player.RedRight;
+            else
+                return Player.None;
+        else
+            return Player.None;
+    }
+
     // Business Functions //
 
     public bool PlaceTile(int row, int column, TileType tileType, out Sos[] completedSosArray)
     {
+        // Don't place if the game is over or the board is filled
+        if (IsGameOver() || IsBoardFilled())
+        {
+            completedSosArray = [];
+            return false;
+        }
+        
         if (tileType is not TileType.None // If the placing tile is S or O
             && row < size && column < size // AND position is valid 
             && board[row][column] == TileType.None) // AND Clicked tile is empty

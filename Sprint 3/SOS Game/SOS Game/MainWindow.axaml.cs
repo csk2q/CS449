@@ -80,7 +80,7 @@ public partial class MainWindow : Window
             TurnTextBlock.Text = "Blue's Turn";
             TurnTextBlock.Foreground = Brushes.Blue;
         }
-        else
+        else if (gameBoard.PlayerTurn == Player.RedRight)
         {
             //RedRight's turn
             TurnTextBlock.Text = "Red's Turn";
@@ -129,13 +129,16 @@ public partial class MainWindow : Window
                 else
                     tileSelection = TileType.O;
             }
-            else
-            {//RedRight's turn
+            else if (placingPlayer == Player.RedRight)
+            {
+                //RedRight's turn
                 if (RedSChoice.IsChecked ?? true)
                     tileSelection = TileType.S;
                 else
                     tileSelection = TileType.O;
             }
+            else
+                throw new ApplicationException($"Unknown Player turn! \"{placingPlayer}\" is not a valid player.");
             
             // Try place tile
             bool result = gameBoard.PlaceTile(Grid.GetRow(button), Grid.GetColumn(button), tileSelection, out Sos[] completedSosArray);
@@ -184,8 +187,7 @@ public partial class MainWindow : Window
             }
             else
             {//Failed to place tile
-                //TODO ? show message box about tile placement failure
-                Debug.WriteLine($"Failed to place tile.");
+                Debug.WriteLine($"Failed to place tile {tileSelection} at Row:{Grid.GetRow(button)}, Column:{Grid.GetColumn(button)}. (From top left corner.)");
             }
             
             // Check for game completion based on Simple/General game mode
