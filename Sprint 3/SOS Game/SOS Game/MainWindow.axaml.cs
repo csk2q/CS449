@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Shapes;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using SOS_Game.Logic;
@@ -12,13 +13,13 @@ namespace SOS_Game;
 public partial class MainWindow : Window
 {
     // Note: Several functions & variables have been made public to allow for unit testing
-    
+
     // Variables //
 
     private int currentBoardSize;
     private GameBoard gameBoard = new SimpleGame(0);
-    
-    
+
+
     // Constructor //
     public MainWindow()
     {
@@ -27,17 +28,17 @@ public partial class MainWindow : Window
 
         currentBoardSize = getBoardSizeInput();
     }
-    
+
     // Getters & Setters //
 
     private int getBoardSizeInput()
     {
         int value = (int)Math.Clamp(Convert.ToInt32(BoardSizeNumericUpDown.Value), GameBoard.MinBoardSize,
             GameBoard.MaxBoardSize);
-        
+
         //Override displayed value to show used value.
         BoardSizeNumericUpDown.Value = value;
-        
+
         return value;
     }
 
@@ -63,7 +64,7 @@ public partial class MainWindow : Window
 
         //Click callback
         button.Click += placeTile;
-        
+
         // Set letter of tile
         if (tileType != TileType.None)
         {
@@ -72,7 +73,7 @@ public partial class MainWindow : Window
 
         return button;
     }
-    
+
     private void updateTurnText()
     {
         if (gameBoard.IsGameOver())
@@ -91,7 +92,6 @@ public partial class MainWindow : Window
             TurnTextBlock.Text = "Red's Turn";
             TurnTextBlock.Foreground = Brushes.Red;
         }
-        
     }
 
     private Button? getTile(int row, int column)
@@ -99,12 +99,12 @@ public partial class MainWindow : Window
         // Try fast path
         // Position on board is based on row(i / boardSize) and column(i % boardSize)
         // Reverse to solve for i from row and column
-        int i =  row * currentBoardSize + column;
+        int i = row * currentBoardSize + column;
         if (GameBoardGrid.Children[i] is Button tile
             && Grid.GetRow(tile) == row
             && Grid.GetColumn(tile) == column)
             return tile;
-            
+
         // Fallback to iterating over all elements
         foreach (var control in GameBoardGrid.Children)
         {
@@ -124,8 +124,8 @@ public partial class MainWindow : Window
         Debug.WriteLine($"Failed to find tile: {row}, {column}");
         return null;
     }
-    
-    
+
+
     // Event handlers //
 
     private void OnWindowSizeChanged(object? sender, SizeChangedEventArgs e)
@@ -137,19 +137,19 @@ public partial class MainWindow : Window
     private void GameBoardGrid_OnSizeChanged(object? sender, SizeChangedEventArgs e)
     {
         var gridSize = Math.Min(GameBoarder.Bounds.Width, GameBoarder.Bounds.Height);
-        
+
         foreach (var control in GameBoardGrid.Children)
         {
-            if(control is Button tile)
+            if (control is Button tile)
             {
                 tile.Width = tile.Height = gridSize / currentBoardSize;
             }
         }
     }
-    
-    
+
+
     // UI Logic //
-    
+
     private void placeTile(object? sender, RoutedEventArgs e)
     {
         if (sender is Button button)
@@ -176,55 +176,58 @@ public partial class MainWindow : Window
             }
             else
                 throw new ApplicationException($"Unknown Player turn! \"{placingPlayer}\" is not a valid player.");
-            
-            // Try place tile
-            bool result = gameBoard.PlaceTile(Grid.GetRow(button), Grid.GetColumn(button), tileSelection, out Sos[] completedSosArray);
 
-            // TODO Change to colored lines
-            // Color background of buttons in sos
-                    foreach (var (s1, o, s2) in completedSosArray)
+            // Try place tile
+            bool result = gameBoard.PlaceTile(Grid.GetRow(button), Grid.GetColumn(button), tileSelection,
+                out Sos[] completedSosArray);
+
+            // For every completed SOS
+            foreach (var sos in completedSosArray)
             {
-                Position[] tiles = [s1, o, s2];
+                markSos(sos);
+                
+                // TODO REMOVE DEPRECATED
+                // Color background of buttons in completed sos
+                /*Position[] tiles = [sos.S1, sos.O, sos.S2];
                 foreach (var position in tiles)
-                    {
+                {
                     Button? curTile = getTile(position.row, position.column);
                     Debug.Assert(curTile is not null);
                     if (curTile is not null)
-                        {
-                            // Color letter based on player turn
-                            if (placingPlayer == Player.BlueLeft)
-                                curTile.Background = Brushes.DarkBlue;
-                            else
-                                curTile.Background = Brushes.DarkRed;
-                        }
+                    {
+                        // Color letter based on player turn
+                        if (placingPlayer == Player.BlueLeft)
+                            curTile.Background = Brushes.DarkBlue;
+                        else
+                            curTile.Background = Brushes.DarkRed;
+                    }
                     else
-                        throw new ApplicationException($"Could not find tile {position.row}, {position.column}! Yet, it was part of an SOS?");
-                }
+                        throw new ApplicationException(
+                            $"Could not find tile {position.row}, {position.column}! Yet, it was part of an SOS?");
+                }*/
             }
 
             if (result)
-            {//Tile was placed successfully
+            {
+                //Tile was placed successfully
                 // Color letter based on player turn
                 if (placingPlayer == Player.BlueLeft)
                     button.Foreground = Brushes.Blue;
                 else
                     button.Foreground = Brushes.Red;
-                
+
                 // Set tile letter
                 button.Content = Enum.GetName(tileSelection);
-                
-                
-                
-                
-                
             }
             else
-            {//Failed to place tile
-                Debug.WriteLine($"Failed to place tile {tileSelection} at Row:{Grid.GetRow(button)}, Column:{Grid.GetColumn(button)}. (From top left corner.)");
+            {
+                //Failed to place tile
+                Debug.WriteLine(
+                    $"Failed to place tile {tileSelection} at Row:{Grid.GetRow(button)}, Column:{Grid.GetColumn(button)}. (From top left corner.)");
             }
-            
-            // Check for game completion based on Simple/General game mode
-            
+
+            // TODO Check for game completion based on Simple/General game mode
+            // TODO Add message box announcing the winner
 
             updateTurnText();
         }
@@ -236,23 +239,23 @@ public partial class MainWindow : Window
     {
         // Get input
         var boardSize = currentBoardSize = getBoardSizeInput();
-        
+
         //Default game mode is simple
         GameType gameMode = (SimpleGameRadioButton.IsChecked ?? true) ? GameType.Simple : GameType.General;
-        
+
         //Set up variables
         var newTiles = new List<Button>(boardSize);
-        
+
         if (gameMode == GameType.Simple)
             gameBoard = new SimpleGame(boardSize);
         else
             gameBoard = new GeneralGame(boardSize);
-        
+
         //Generate new tiles
         for (int i = 0; i < Math.Pow(boardSize, 2); i++)
         {
             var tile = getNewTile(TileType.None);
-            
+
             //Set position on board
             Grid.SetRow(tile, i / boardSize);
             Grid.SetColumn(tile, i % boardSize);
@@ -261,22 +264,66 @@ public partial class MainWindow : Window
             var gridSize = Math.Min(GameBoarder.Bounds.Width, GameBoarder.Bounds.Height);
             var sideLength = gridSize / boardSize;
             tile.Width = tile.Height = sideLength;
-            
+
             //Scale font size
             const double percentageOfTile = 0.80;
             tile.FontSize = sideLength * percentageOfTile;
-            
+
             newTiles.Add(tile);
         }
-        
+
         //Clear and update board UI
         GameBoardGrid.Children.Clear();
         GameBoardGrid.Children.AddRange(newTiles);
         
+        //Clear lines from last game
+        BoardCanvas.Children.Clear();
+
         updateTurnText();
     }
-    
-    
+
+
     // Helper Functions //
 
+    private void markSos(Sos sos)
+    {
+        var s1 = getTile(sos.S1.row, sos.S1.column);
+        var o = getTile(sos.O.row, sos.O.column);
+        var s2 = getTile(sos.S2.row, sos.S2.column);
+        if (s1 is null || o is null || s2 is null)
+        {
+            Debug.WriteLine($"Failed get tiles at {sos.S1}, {sos.S2}. Yet, they were a part of an SOS?");
+            return;
+        }
+        
+        // Get the position of the top-left corner of the tile
+        Point startPoint = s1.TranslatePoint(new Point(0, 0), BoardCanvas)!.Value;
+        Point centerPoint = o.TranslatePoint(new Point(0, 0), BoardCanvas)!.Value;
+        Point endPoint = s2.TranslatePoint(new Point(0, 0), BoardCanvas)!.Value;
+        
+        // Calculate center of buttons
+        // Note: The values in Bounds does not seem to give exactly correct results.
+        //  Using Bounds.Center gave even more erroneous values so manual calculation is necessary to get ok results.
+        startPoint = new Point(startPoint.X + s1.Bounds.Width / 2, startPoint.Y + s1.Bounds.Height / 2);
+        centerPoint = new Point(centerPoint.X + o.Bounds.Width, centerPoint.Y + o.Bounds.Height / 2);
+        endPoint = new Point(endPoint.X + s2.Bounds.Width / 2, endPoint.Y + s2.Bounds.Height / 2);
+        
+        // Scale up around center so lines don't start from center of the tile
+        var scalingFactor = 1.3;
+        startPoint = centerPoint + (scalingFactor * (startPoint - centerPoint));
+        endPoint = centerPoint + (scalingFactor * (endPoint - centerPoint));
+
+        
+        // Create line object
+        var line = new Line
+        {
+            StartPoint = startPoint,
+            EndPoint = endPoint,
+            Stroke = gameBoard.PlayerTurn == Player.BlueLeft ? Brushes.DarkBlue : Brushes.DarkRed,
+            StrokeThickness = 40 / (double)currentBoardSize,
+        };
+
+        // Ad to canvas
+        BoardCanvas.Children.Add(line);
+    }
 }

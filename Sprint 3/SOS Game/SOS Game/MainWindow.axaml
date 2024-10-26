@@ -99,6 +99,11 @@
                     
                 </UniformGrid>
         </Border>
+        
+        <!-- Line Canvas for completed SOS -->
+        <Canvas Grid.Row="1" Grid.Column="1" x:Name="BoardCanvas" IsHitTestVisible="False">
+            
+        </Canvas>
 
     </Grid>
 
