@@ -91,6 +91,38 @@ public partial class MainWindow : Window
             TurnTextBlock.Text = "Red's Turn";
             TurnTextBlock.Foreground = Brushes.Red;
         }
+        
+    }
+
+    private Button? getTile(int row, int column)
+    {
+        // Try fast path
+        // Position on board is based on row(i / boardSize) and column(i % boardSize)
+        // Reverse to solve for i from row and column
+        int i =  row * currentBoardSize + column;
+        if (GameBoardGrid.Children[i] is Button tile
+            && Grid.GetRow(tile) == row
+            && Grid.GetColumn(tile) == column)
+            return tile;
+            
+        // Fallback to iterating over all elements
+        foreach (var control in GameBoardGrid.Children)
+        {
+            if (control is Button curTile)
+            {
+                var tileRow = Grid.GetRow(curTile);
+                var tileCol = Grid.GetColumn(curTile);
+
+                if (tileRow == row && tileCol == column)
+                {
+                    Debug.WriteLine($"Slow path taken for tile: {row}, {column}");
+                    return control as Button;
+                }
+            }
+        }
+
+        Debug.WriteLine($"Failed to find tile: {row}, {column}");
+        return null;
     }
     
     
@@ -150,18 +182,14 @@ public partial class MainWindow : Window
 
             // TODO Change to colored lines
             // Color background of buttons in sos
-            foreach (var control in GameBoardGrid.Children)
-            {
-                if (control is Button curTile)
-                {
-                    var row = Grid.GetRow(curTile);
-                    var col = Grid.GetColumn(curTile);
-                    
                     foreach (var (s1, o, s2) in completedSosArray)
+            {
+                Position[] tiles = [s1, o, s2];
+                foreach (var position in tiles)
                     {
-                        if ((s1.row == row && s1.column == col)
-                            || (o.row == row && o.column == col)
-                            || (s2.row == row && s2.column == col))
+                    Button? curTile = getTile(position.row, position.column);
+                    Debug.Assert(curTile is not null);
+                    if (curTile is not null)
                         {
                             // Color letter based on player turn
                             if (placingPlayer == Player.BlueLeft)
@@ -169,8 +197,8 @@ public partial class MainWindow : Window
                             else
                                 curTile.Background = Brushes.DarkRed;
                         }
-                        
-                    }
+                    else
+                        throw new ApplicationException($"Could not find tile {position.row}, {position.column}! Yet, it was part of an SOS?");
                 }
             }
 
