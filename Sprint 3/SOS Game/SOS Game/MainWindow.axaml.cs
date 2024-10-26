@@ -75,7 +75,12 @@ public partial class MainWindow : Window
     
     private void updateTurnText()
     {
-        if (gameBoard.PlayerTurn == Player.BlueLeft)
+        if (gameBoard.IsGameOver())
+        {
+            TurnTextBlock.Text = "Game Over!";
+            TurnTextBlock.Foreground = Brushes.Gold;
+        }
+        else if (gameBoard.PlayerTurn == Player.BlueLeft)
         {//BlueLeft's turn
             TurnTextBlock.Text = "Blue's Turn";
             TurnTextBlock.Foreground = Brushes.Blue;
