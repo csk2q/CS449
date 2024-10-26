@@ -471,10 +471,8 @@ public class ACUnitTests
         var gameBoardFieldInfo =
             typeof(MainWindow).GetField("gameBoard", BindingFlags.NonPublic | BindingFlags.Instance);
         Assert.NotNull(gameBoardFieldInfo);
-        var gameTypeInfo = typeof(GameBoard).GetField("gameType", BindingFlags.Instance | BindingFlags.NonPublic);
-        Assert.NotNull(gameTypeInfo);
         var gameBoard = (GameBoard)gameBoardFieldInfo.GetValue(window)!;
-        Assert.Equal(gameType, gameTypeInfo.GetValue(gameBoard));
+        Assert.Equal(gameType, gameBoard.GetGameType());
     }
 
 
@@ -556,10 +554,8 @@ public class ACUnitTests
         var gameBoardFieldInfo =
             typeof(MainWindow).GetField("gameBoard", BindingFlags.NonPublic | BindingFlags.Instance);
         Assert.NotNull(gameBoardFieldInfo);
-        var gameTypeInfo = typeof(GameBoard).GetField("gameType", BindingFlags.Instance | BindingFlags.NonPublic);
-        Assert.NotNull(gameTypeInfo);
         var gameBoard = (GameBoard)gameBoardFieldInfo.GetValue(window)!;
-        Assert.Equal(gameType, gameTypeInfo.GetValue(gameBoard));
+        Assert.Equal(gameType, gameBoard.GetGameType());
 
         //Clear game grid so we can check later
         gameGrid.Children.Clear();
@@ -571,7 +567,7 @@ public class ACUnitTests
         Assert.NotEmpty(gameGrid.Children);
 
         // Check the game type is the same as the starting value
-        Assert.Equal(gameType, gameTypeInfo.GetValue(gameBoard));
+        Assert.Equal(gameType, gameBoard.GetGameType());
     }
 
     [AvaloniaTheory]
@@ -606,10 +602,8 @@ public class ACUnitTests
         var gameBoardFieldInfo =
             typeof(MainWindow).GetField("gameBoard", BindingFlags.NonPublic | BindingFlags.Instance);
         Assert.NotNull(gameBoardFieldInfo);
-        var gameTypeInfo = typeof(GameBoard).GetField("gameType", BindingFlags.Instance | BindingFlags.NonPublic);
-        Assert.NotNull(gameTypeInfo);
         var gameBoard = (GameBoard)gameBoardFieldInfo.GetValue(window)!;
-        Assert.Equal(gameType, gameTypeInfo.GetValue(gameBoard));
+        Assert.Equal(gameType, gameBoard.GetGameType());
 
 
         // Invert the game mode selection
@@ -625,7 +619,7 @@ public class ACUnitTests
         }
 
         // Check the game type is the same as the starting value
-        Assert.Equal(gameType, gameTypeInfo.GetValue(gameBoard));
+        Assert.Equal(gameType, gameBoard.GetGameType());
     }
 
     [AvaloniaFact]
@@ -642,11 +636,9 @@ public class ACUnitTests
         var gameBoardFieldInfo =
             typeof(MainWindow).GetField("gameBoard", BindingFlags.NonPublic | BindingFlags.Instance);
         Assert.NotNull(gameBoardFieldInfo);
-        var gameTypeInfo = typeof(GameBoard).GetField("gameType", BindingFlags.Instance | BindingFlags.NonPublic);
-        Assert.NotNull(gameTypeInfo);
         var gameBoard = (GameBoard)gameBoardFieldInfo.GetValue(window)!;
 
         //Check that game type is simple
-        Assert.Equal(GameType.Simple, gameTypeInfo.GetValue(gameBoard));
+        Assert.Equal(GameType.Simple, gameBoard.GetGameType());
     }
 }
