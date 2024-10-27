@@ -78,20 +78,48 @@ public partial class MainWindow : Window
     {
         if (gameBoard.IsGameOver())
         {
-            TurnTextBlock.Text = "Game Over!";
-            TurnTextBlock.Foreground = Brushes.Gold;
+            TurnDisplay.Opacity = 0;
+            WinnerDisplay.Opacity = 100;
+
+            switch (gameBoard.GetWinner())
+            {
+                // Draw
+                case Player.None:
+                    WinnerNameText.Text = "None (Draw)";
+                    WinnerNameText.Foreground = Brushes.MediumPurple;
+                    break;
+                // Blue win
+                case Player.BlueLeft:
+                    WinnerNameText.Text = "Blue!";
+                    WinnerNameText.Foreground = Brushes.Blue;
+                    break;
+                // Red win
+                case Player.RedRight:
+                    WinnerNameText.Text = "Red!";
+                    WinnerNameText.Foreground = Brushes.Red;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            
         }
-        else if (gameBoard.PlayerTurn == Player.BlueLeft)
+        else
         {
-            //BlueLeft's turn
-            TurnTextBlock.Text = "Blue's Turn";
-            TurnTextBlock.Foreground = Brushes.Blue;
-        }
-        else if (gameBoard.PlayerTurn == Player.RedRight)
-        {
-            //RedRight's turn
-            TurnTextBlock.Text = "Red's Turn";
-            TurnTextBlock.Foreground = Brushes.Red;
+            TurnDisplay.Opacity = 100;
+            WinnerDisplay.Opacity = 0;
+            
+            if (gameBoard.PlayerTurn == Player.BlueLeft)
+            {
+                //BlueLeft's turn
+                TurnTextBlock.Text = "Blue's Turn";
+                TurnTextBlock.Foreground = Brushes.Blue;
+            }
+            else if (gameBoard.PlayerTurn == Player.RedRight)
+            {
+                //RedRight's turn
+                TurnTextBlock.Text = "Red's Turn";
+                TurnTextBlock.Foreground = Brushes.Red;
+            }
         }
     }
 
@@ -307,10 +335,13 @@ public partial class MainWindow : Window
 
         // Note :
         //      The following is an attempt to make the lines render correctly.
-        //      Avalonia does not render the lines in the correct place without all of following.
+        //      Avalonia does not render the lines in the correct place.
+        //      It seems Avalonia adds a random offset depending on the order and type of tiles placed.
+        //      Possibly also dependent on which player places the tiles or completes the SOS.
 
         // The values in Bounds does not seem to give correct results.
-        // Using Bounds.Center gave even more erroneous values so manual calculation is necessary to recive ok results.
+        // Using Bounds.Center gave even more erroneous values.
+        // Manual calculation is necessary to receive relatively ok results.
 
         // Get the position of the top-left corner of the tile
         Point startPoint = s1.TranslatePoint(new Point(-7.5, -2.5), BoardCanvas)!.Value;

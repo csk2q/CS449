@@ -79,13 +79,25 @@
 
         </StackPanel>
 
-        <!-- Board size control -->
-        <StackPanel Grid.Row="2" Grid.Column="1"
+        <!-- Turn Display -->
+        <StackPanel Name="TurnDisplay" Grid.Row="2" Grid.Column="1"
                     VerticalAlignment="Center" HorizontalAlignment="Center"
                     Orientation="Horizontal" Spacing="5">
 
             <TextBlock FontSize="20" VerticalAlignment="Center">It is</TextBlock>
             <TextBlock Name="TurnTextBlock" FontSize="20" VerticalAlignment="Center">???'s turn.</TextBlock>
+
+        </StackPanel>
+        
+        <!-- Winner Display-->
+        <StackPanel Name="WinnerDisplay" Grid.Row="2" Grid.Column="1"
+                    Opacity="0" Background="DarkGreen"
+                    VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Orientation="Horizontal" Spacing="5">
+
+            <TextBlock Name="WinnerText" FontSize="25" VerticalAlignment="Center" FontWeight="Bold">The winner is: </TextBlock>
+            <TextBlock Name="WinnerNameText" FontSize="25" VerticalAlignment="Center" FontWeight="Bold" FontStyle="Italic">???</TextBlock>
+
 
         </StackPanel>
 
