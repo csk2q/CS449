@@ -1,6 +1,6 @@
 namespace SOS_Game.Logic;
 
-public class GeneralGame : GameBoard
+public sealed class GeneralGame : GameBoard
 {
     public GeneralGame(int size) : base(size)
     {
