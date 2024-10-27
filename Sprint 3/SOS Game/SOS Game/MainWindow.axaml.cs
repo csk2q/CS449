@@ -317,6 +317,7 @@ public partial class MainWindow : Window
         BoardCanvas.Children.Clear();
 
         updateTurnText();
+        updateScoreText();
     }
 
 
