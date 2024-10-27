@@ -82,7 +82,8 @@ public partial class MainWindow : Window
             TurnTextBlock.Foreground = Brushes.Gold;
         }
         else if (gameBoard.PlayerTurn == Player.BlueLeft)
-        {//BlueLeft's turn
+        {
+            //BlueLeft's turn
             TurnTextBlock.Text = "Blue's Turn";
             TurnTextBlock.Foreground = Brushes.Blue;
         }
@@ -92,6 +93,12 @@ public partial class MainWindow : Window
             TurnTextBlock.Text = "Red's Turn";
             TurnTextBlock.Foreground = Brushes.Red;
         }
+    }
+
+    private void updateScoreText()
+    {
+        BlueScore.Text = gameBoard.BlueScore.ToString();
+        RedScore.Text = gameBoard.RedScore.ToString();
     }
 
     private Button? getTile(int row, int column)
@@ -160,7 +167,8 @@ public partial class MainWindow : Window
 
             // Get player choices
             if (placingPlayer == Player.BlueLeft)
-            {//BlueLeft's turn
+            {
+                //BlueLeft's turn
                 if (BlueSChoice.IsChecked ?? true)
                     tileSelection = TileType.S;
                 else
@@ -185,7 +193,7 @@ public partial class MainWindow : Window
             foreach (var sos in completedSosArray)
             {
                 markSos(sos);
-                
+
                 // TODO REMOVE DEPRECATED
                 // Color background of buttons in completed sos
                 /*Position[] tiles = [sos.S1, sos.O, sos.S2];
@@ -276,7 +284,7 @@ public partial class MainWindow : Window
         //Clear and update board UI
         GameBoardGrid.Children.Clear();
         GameBoardGrid.Children.AddRange(newTiles);
-        
+
         //Clear lines from last game
         BoardCanvas.Children.Clear();
 
@@ -293,28 +301,85 @@ public partial class MainWindow : Window
         var s2 = getTile(sos.S2.row, sos.S2.column);
         if (s1 is null || o is null || s2 is null)
         {
-            Debug.WriteLine($"Failed get tiles at {sos.S1}, {sos.S2}. Yet, they were a part of an SOS?");
+            Debug.WriteLine($"Failed get tiles at {sos.S1}, {sos.O}, {sos.S2}. Yet, they were a part of an SOS?");
             return;
         }
-        
+
+        // Note :
+        //      The following is an attempt to make the lines render correctly.
+        //      Avalonia does not render the lines in the correct place without all of following.
+
+        // The values in Bounds does not seem to give correct results.
+        // Using Bounds.Center gave even more erroneous values so manual calculation is necessary to recive ok results.
+
         // Get the position of the top-left corner of the tile
-        Point startPoint = s1.TranslatePoint(new Point(0, 0), BoardCanvas)!.Value;
+        Point startPoint = s1.TranslatePoint(new Point(-7.5, -2.5), BoardCanvas)!.Value;
         Point centerPoint = o.TranslatePoint(new Point(0, 0), BoardCanvas)!.Value;
         Point endPoint = s2.TranslatePoint(new Point(0, 0), BoardCanvas)!.Value;
-        
-        // Calculate center of buttons
-        // Note: The values in Bounds does not seem to give exactly correct results.
-        //  Using Bounds.Center gave even more erroneous values so manual calculation is necessary to get ok results.
-        startPoint = new Point(startPoint.X + s1.Bounds.Width / 2, startPoint.Y + s1.Bounds.Height / 2);
-        centerPoint = new Point(centerPoint.X + o.Bounds.Width, centerPoint.Y + o.Bounds.Height / 2);
-        endPoint = new Point(endPoint.X + s2.Bounds.Width / 2, endPoint.Y + s2.Bounds.Height / 2);
-        
-        // Scale up around center so lines don't start from center of the tile
+
+        // Debug rendering of top left of tile
+        if (false)
+        {
+            var circle = new Rectangle
+            {
+                Fill = new SolidColorBrush(Colors.LawnGreen),
+                Width = 5,
+                Height = 5,
+                ZIndex = 999,
+            };
+            Canvas.SetLeft(circle, startPoint.X);
+            Canvas.SetTop(circle, startPoint.Y);
+            BoardCanvas.Children.Add(circle);
+            circle = new Rectangle
+            {
+                Fill = new SolidColorBrush(Colors.DeepPink),
+                Width = 5,
+                Height = 5,
+                ZIndex = 999,
+            };
+            Canvas.SetLeft(circle, centerPoint.X);
+            Canvas.SetTop(circle, centerPoint.Y);
+            BoardCanvas.Children.Add(circle);
+            circle = new Rectangle
+            {
+                Fill = new SolidColorBrush(Colors.OrangeRed),
+                Width = 5,
+                Height = 5,
+                ZIndex = 999,
+            };
+            Canvas.SetLeft(circle, endPoint.X);
+            Canvas.SetTop(circle, endPoint.Y);
+            BoardCanvas.Children.Add(circle);
+        }
+
+        // Subtract the boarders to get the real top left corner
+        startPoint = new(startPoint.X - s1.BorderThickness.Left, startPoint.Y - s1.BorderThickness.Top);
+        centerPoint = new(centerPoint.X - o.BorderThickness.Left, centerPoint.Y - o.BorderThickness.Top);
+        endPoint = new(endPoint.X - s2.BorderThickness.Left, endPoint.Y - s2.BorderThickness.Top);
+
+
+        // Calculate the width including the boarders
+        var s1Width = s1.Width + s1.BorderThickness.Left + s1.BorderThickness.Right;
+        var oWidth = o.Width + o.BorderThickness.Left + o.BorderThickness.Right;
+        var s2Width = s2.Width + s2.BorderThickness.Left + s2.BorderThickness.Right;
+
+        // Calculate the height including the boarders
+        var s1Height = s1.Height + s1.BorderThickness.Bottom + s1.BorderThickness.Top;
+        var oHeight = o.Height + o.BorderThickness.Bottom + o.BorderThickness.Top;
+        var s2Height = s2.Height + s2.BorderThickness.Bottom + s2.BorderThickness.Top;
+
+        // Calculate the center
+        startPoint = new Point(startPoint.X + s1Width / 2, startPoint.Y + s1Height / 2);
+        centerPoint = new Point(centerPoint.X + oWidth / 2, centerPoint.Y + oHeight / 2);
+        endPoint = new Point(endPoint.X + s2Width / 2, endPoint.Y + s2Height / 2);
+
+        // Scale up around center so lines don't start from center of the tiles
+        // Desmos graph of the scaling math: https://www.desmos.com/calculator/aws7k4yil5
         var scalingFactor = 1.3;
         startPoint = centerPoint + (scalingFactor * (startPoint - centerPoint));
         endPoint = centerPoint + (scalingFactor * (endPoint - centerPoint));
 
-        
+
         // Create line object
         var line = new Line
         {
@@ -324,7 +389,7 @@ public partial class MainWindow : Window
             StrokeThickness = 40 / (double)currentBoardSize,
         };
 
-        // Ad to canvas
+        // Add to canvas
         BoardCanvas.Children.Add(line);
     }
 }
