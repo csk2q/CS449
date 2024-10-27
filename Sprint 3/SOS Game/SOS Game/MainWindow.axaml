@@ -44,6 +44,12 @@
         <StackPanel Grid.Row="1" Grid.Column="0"
                     HorizontalAlignment="Center" VerticalAlignment="Center">
             <TextBlock FontSize="25">Blue Player</TextBlock>
+            
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
+                        Orientation="Horizontal" Spacing="5">
+                <TextBlock FontSize="20" VerticalAlignment="Center">Score:</TextBlock>
+                <TextBlock Name="BlueScore" FontSize="20" VerticalAlignment="Center" Foreground="Blue">?</TextBlock>
+            </StackPanel>
 
             <RadioButton GroupName="BluePlayerTileChoice" Name="BlueSChoice" FontSize="20" IsChecked="True">
                 S
@@ -57,6 +63,12 @@
         <StackPanel Grid.Row="1" Grid.Column="2"
                     HorizontalAlignment="Center" VerticalAlignment="Center">
             <TextBlock FontSize="25">Red Player</TextBlock>
+            
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
+                        Orientation="Horizontal" Spacing="5">
+                <TextBlock FontSize="20" VerticalAlignment="Center">Score:</TextBlock>
+                <TextBlock Name="RedScore" FontSize="20" VerticalAlignment="Center" Foreground="Red">?</TextBlock>
+            </StackPanel>
 
             <RadioButton GroupName="RedPlayerTileChoice" Name="RedSChoice" FontSize="20" IsChecked="True">
                 S
@@ -72,7 +84,6 @@
                     VerticalAlignment="Center" HorizontalAlignment="Center"
                     Orientation="Horizontal" Spacing="5">
 
-            <!-- TODO hook up to the backing logic -->
             <TextBlock FontSize="20" VerticalAlignment="Center">It is</TextBlock>
             <TextBlock Name="TurnTextBlock" FontSize="20" VerticalAlignment="Center">???'s turn.</TextBlock>
 

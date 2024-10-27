@@ -58,7 +58,7 @@ public partial class MainWindow : Window
             CornerRadius = new CornerRadius(0), // No rounded corners
             Padding = new Thickness(0), // No padding
             Margin = new Thickness(0), // No margin
-            BorderThickness = new Thickness(1), // No border on the button
+            BorderThickness = new Thickness(1),
             BorderBrush = Brushes.Black,
         };
 
@@ -230,6 +230,7 @@ public partial class MainWindow : Window
             // TODO Add message box announcing the winner
 
             updateTurnText();
+            updateScoreText();
         }
         else
             Debug.Assert(false, "ClickTile called but sender is not a button! Sender: " + sender);
