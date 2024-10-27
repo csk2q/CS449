@@ -79,7 +79,7 @@ public void WinForSPlayer_SimpleGame()
     Assert.Equal(initialContent, buttons[4].Content);
     
     // Check that the winner is shown
-    var winnerDisplayInfo = window.GetType().GetField("winnerDisplayInfo", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+    var winnerDisplayInfo = window.GetType().GetField("WinnerDisplay", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
     Assert.NotNull(winnerDisplayInfo);
     var winnerDisplay = (StackPanel?)winnerDisplayInfo.GetValue(window);
     Assert.NotNull(winnerDisplay);
