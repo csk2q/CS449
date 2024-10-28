@@ -114,6 +114,64 @@ public class Sprint3UnitTests
         Assert.Equal(Brushes.DarkBlue, ((Line)boardCanvas.Children[0]).Stroke);
     }
 
+    /*
+     * AC 5.2 Win for the Red Player (Simple game)
+       Given: It is the Red player’s turn 
+       When: A SOS sequence is completed
+       Then: The game is over
+       And: Lock the board from further moves
+       And: Declare the Red Player the winner
+     */
+    [AvaloniaFact]
+    void redWinSimpleGameTest()
+    {
+        // Set up the window
+        var window = new MainWindow();
+        window.Show();
+        
+        // Set game mode and start game
+        setGameMode(GameType.Simple, window);
+        window.StartNewGame(null, new RoutedEventArgs());
+
+        // Set Red tile choice to O
+        setTileChoice(Player.RedRight, TileType.O, window);
+        
+        // Make an SOS
+        var gameBoardGrid = window.FindControl<UniformGrid>("GameBoardGrid");
+        Assert.NotNull(gameBoardGrid);
+        foreach (var i in new [] {0, 4, 2, 1} )
+            ((Button)gameBoardGrid.Children[i]).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        
+
+        // Check red score to verify an SOS was made
+        var gameBoardFieldInfo =
+            typeof(MainWindow).GetField("gameBoard", BindingFlags.NonPublic | BindingFlags.Instance);
+        Assert.NotNull(gameBoardFieldInfo);
+        var gameBoard = (GameBoard?)gameBoardFieldInfo.GetValue(window);
+        Assert.NotNull(gameBoard);
+        Assert.Equal(1, gameBoard.RedScore);
+        
+        // Verify game is over
+        Assert.True(gameBoard.IsGameOver());
+        
+        // Test board lock
+        var middleLeftButton = gameBoardGrid.Children[3] as Button;
+        Assert.NotNull(middleLeftButton);
+        var origanalileContents = middleLeftButton.Content as string;
+        Assert.True(string.IsNullOrEmpty(origanalileContents));
+        middleLeftButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Assert.Equal(origanalileContents, middleLeftButton.Content as string);
+
+        // Check winner display is rendered
+        var winnerDisplay = window.FindControl<StackPanel>("WinnerDisplay");
+        Assert.NotNull(winnerDisplay);
+        Assert.Equal(100, winnerDisplay.Opacity);
+        
+        // Check that blue is declared the winner
+        var winnerNameText = window.FindControl<TextBlock>("WinnerNameText");
+        Assert.NotNull(winnerNameText);
+        Assert.Contains("Red", winnerNameText.Text);
+    }
 
     // ChatGPT assisted unit tests //
 
