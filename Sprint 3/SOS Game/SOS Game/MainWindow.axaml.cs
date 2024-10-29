@@ -262,9 +262,6 @@ public partial class MainWindow : Window
                     $"Failed to place tile {tileSelection} at Row:{Grid.GetRow(button)}, Column:{Grid.GetColumn(button)}. (From top left corner.)");
             }
 
-            // TODO Check for game completion based on Simple/General game mode
-            // TODO Add message box announcing the winner
-
             updateTurnText();
             updateScoreText();
         }
@@ -283,6 +280,8 @@ public partial class MainWindow : Window
         //Set up variables
         var newTiles = new List<Button>(boardSize);
 
+
+        // TODO move to GameBoard.CreateNewGame(gameType)
         if (gameMode == GameType.Simple)
             gameBoard = new SimpleGame(boardSize);
         else
