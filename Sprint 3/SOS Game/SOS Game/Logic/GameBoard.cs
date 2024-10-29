@@ -45,6 +45,22 @@ public abstract class GameBoard
         for (int i = 0; i < size; i++)
             board[i] = new TileType[size];
     }
+    
+    // Create Method //
+
+    public static GameBoard CreateNewGame(GameType gameType, int boardSize)
+    {
+        switch (gameType)
+        {
+            default:
+            case GameType.Simple:
+                return new SimpleGame(boardSize);
+                break;
+            case GameType.General:
+                return new GeneralGame(boardSize);
+                break;
+        }
+    }
 
     // Abstract functions //
 

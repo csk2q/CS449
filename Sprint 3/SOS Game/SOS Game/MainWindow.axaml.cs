@@ -280,12 +280,7 @@ public partial class MainWindow : Window
         //Set up variables
         var newTiles = new List<Button>(boardSize);
 
-
-        // TODO move to GameBoard.CreateNewGame(gameType)
-        if (gameMode == GameType.Simple)
-            gameBoard = new SimpleGame(boardSize);
-        else
-            gameBoard = new GeneralGame(boardSize);
+        gameBoard = GameBoard.CreateNewGame(gameMode, boardSize);
 
         //Generate new tiles
         for (int i = 0; i < Math.Pow(boardSize, 2); i++)
