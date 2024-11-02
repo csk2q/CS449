@@ -4,7 +4,7 @@ namespace SOS_Game.Logic;
 
 public sealed class SimpleGame : GameBoard
 {
-    public SimpleGame(int size) : base(size)
+    public SimpleGame(int size, bool isBlueComputer, bool isRedComputer) : base(size, isBlueComputer, isRedComputer)
     {
         
     }
@@ -13,6 +13,6 @@ public sealed class SimpleGame : GameBoard
 
     public override bool IsGameOver()
     {
-        return BlueScore > 0 || RedScore > 0 || IsBoardFilled();
+        return Blue.Score > 0 || Red.Score > 0 || IsBoardFilled();
     }
 }

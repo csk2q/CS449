@@ -125,8 +125,8 @@ public partial class MainWindow : Window
 
     private void updateScoreText()
     {
-        BlueScore.Text = gameBoard.BlueScore.ToString();
-        RedScore.Text = gameBoard.RedScore.ToString();
+        BlueScore.Text = gameBoard.Blue.Score.ToString();
+        RedScore.Text = gameBoard.Red.Score.ToString();
     }
 
     private Button? getTile(int row, int column)

@@ -17,25 +17,25 @@ public abstract class GameBoard
 
     // Blue goes first
     // TODO allow setting who plays first?
-    public SOS_Game.PlayerType PlayerTypeTurn { get; private set; } = SOS_Game.PlayerType.BlueLeft;
-    public int BlueScore { get; private set; } = 0;
-    public int RedScore { get; private set; } = 0;
-
-
+    public PlayerType PlayerTypeTurn { get; private set; } = PlayerType.BlueLeft;
+    public Player Blue { get; init; }
+    public Player Red { get; init; }
+    
     // Private Variables //
 
     protected readonly int size;
+    
 
     // (Row, Column) 0,0 is top left.
     private TileType[][] board;
 
-    protected record Turn(SOS_Game.PlayerType Player, Position Position, TileType TileType);
+    protected record Turn(PlayerType Player, Position Position, TileType TileType);
 
     protected List<Turn> turnRecord = [];
 
 
     // Constructor //
-    public GameBoard(int size)
+    public GameBoard(int size, bool isBlueComputer, bool isRedComputer)
     {
         //Set variables
         this.size = (int)Math.Clamp(size, MinBoardSize, MaxBoardSize);
@@ -48,16 +48,16 @@ public abstract class GameBoard
     
     // Create Method //
 
-    public static GameBoard CreateNewGame(GameType gameType, int boardSize)
+    public static GameBoard CreateNewGame(GameType gameType, int boardSize, bool isBlueComputer, bool isRedComputer)
     {
         switch (gameType)
         {
             default:
             case GameType.Simple:
-                return new SimpleGame(boardSize);
+                return new SimpleGame(boardSize, isBlueComputer, isRedComputer);
                 break;
             case GameType.General:
-                return new GeneralGame(boardSize);
+                return new GeneralGame(boardSize, isBlueComputer, isRedComputer);
                 break;
         }
     }
@@ -84,18 +84,21 @@ public abstract class GameBoard
         return turnRecord.Count >= size * size;
     }
 
-    public SOS_Game.PlayerType GetWinner()
+    public PlayerType GetWinner()
     {
         if (IsGameOver())
-            if (BlueScore > RedScore)
-                return SOS_Game.PlayerType.BlueLeft;
-            else if (RedScore > BlueScore)
-                return SOS_Game.PlayerType.RedRight;
+            if (Blue.Score > Red.Score)
+                return PlayerType.BlueLeft;
+            else if (Red.Score > Blue.Score)
+                return PlayerType.RedRight;
             else
-                return SOS_Game.PlayerType.None;
+                return PlayerType.None;
         else
-            return SOS_Game.PlayerType.None;
+            return PlayerType.None;
     }
+    
+    // TODO add GetBoardState()
+    // It will return a yeld-able result? 
 
     // Business Functions //
 
@@ -130,11 +133,11 @@ public abstract class GameBoard
                 // Add score
                 switch (PlayerTypeTurn)
                 {
-                    case SOS_Game.PlayerType.BlueLeft:
-                        BlueScore += 1;
+                    case PlayerType.BlueLeft:
+                        Blue.ScorePoint();
                         break;
-                    case SOS_Game.PlayerType.RedRight:
-                        RedScore += 1;
+                    case PlayerType.RedRight:
+                        Red.ScorePoint();
                         break;
                     default:
                         throw new ArgumentOutOfRangeException("Unknown player turn: " + PlayerTypeTurn);
@@ -145,8 +148,8 @@ public abstract class GameBoard
                 // Change turn
                 PlayerTypeTurn = PlayerTypeTurn switch
                 {
-                    SOS_Game.PlayerType.BlueLeft => SOS_Game.PlayerType.RedRight,
-                    SOS_Game.PlayerType.RedRight => SOS_Game.PlayerType.BlueLeft,
+                    PlayerType.BlueLeft => PlayerType.RedRight,
+                    PlayerType.RedRight => PlayerType.BlueLeft,
                     _ => throw new ArgumentOutOfRangeException("Unknown player turn: " + PlayerTypeTurn)
                 };
             }

@@ -2,7 +2,7 @@ namespace SOS_Game.Logic;
 
 public sealed class GeneralGame : GameBoard
 {
-    public GeneralGame(int size) : base(size)
+    public GeneralGame(int size, bool isBlueComputer, bool isRedComputer) : base(size, isBlueComputer, isRedComputer)
     {
         
     }
