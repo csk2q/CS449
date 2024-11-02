@@ -17,7 +17,7 @@ public abstract class GameBoard
 
     // Blue goes first
     // TODO allow setting who plays first?
-    public Player PlayerTurn { get; private set; } = Player.BlueLeft;
+    public SOS_Game.PlayerType PlayerTypeTurn { get; private set; } = SOS_Game.PlayerType.BlueLeft;
     public int BlueScore { get; private set; } = 0;
     public int RedScore { get; private set; } = 0;
 
@@ -29,7 +29,7 @@ public abstract class GameBoard
     // (Row, Column) 0,0 is top left.
     private TileType[][] board;
 
-    protected record Turn(Player Player, Position Position, TileType TileType);
+    protected record Turn(SOS_Game.PlayerType Player, Position Position, TileType TileType);
 
     protected List<Turn> turnRecord = [];
 
@@ -84,17 +84,17 @@ public abstract class GameBoard
         return turnRecord.Count >= size * size;
     }
 
-    public Player GetWinner()
+    public SOS_Game.PlayerType GetWinner()
     {
         if (IsGameOver())
             if (BlueScore > RedScore)
-                return Player.BlueLeft;
+                return SOS_Game.PlayerType.BlueLeft;
             else if (RedScore > BlueScore)
-                return Player.RedRight;
+                return SOS_Game.PlayerType.RedRight;
             else
-                return Player.None;
+                return SOS_Game.PlayerType.None;
         else
-            return Player.None;
+            return SOS_Game.PlayerType.None;
     }
 
     // Business Functions //
@@ -116,7 +116,7 @@ public abstract class GameBoard
             board[row][column] = tileType;
 
             // Update game record
-            turnRecord.Add(new Turn(PlayerTurn, new Position(row, column), tileType));
+            turnRecord.Add(new Turn(PlayerTypeTurn, new Position(row, column), tileType));
 
             //TODO check for SOS
             completedSosArray = checkSos(row, column);
@@ -128,26 +128,26 @@ public abstract class GameBoard
             if (completedSosArray.Length > 0)
             {
                 // Add score
-                switch (PlayerTurn)
+                switch (PlayerTypeTurn)
                 {
-                    case Player.BlueLeft:
+                    case SOS_Game.PlayerType.BlueLeft:
                         BlueScore += 1;
                         break;
-                    case Player.RedRight:
+                    case SOS_Game.PlayerType.RedRight:
                         RedScore += 1;
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException("Unknown player turn: " + PlayerTurn);
+                        throw new ArgumentOutOfRangeException("Unknown player turn: " + PlayerTypeTurn);
                 }
             }
             else // No SOSes were made
             {
                 // Change turn
-                PlayerTurn = PlayerTurn switch
+                PlayerTypeTurn = PlayerTypeTurn switch
                 {
-                    Player.BlueLeft => Player.RedRight,
-                    Player.RedRight => Player.BlueLeft,
-                    _ => throw new ArgumentOutOfRangeException("Unknown player turn: " + PlayerTurn)
+                    SOS_Game.PlayerType.BlueLeft => SOS_Game.PlayerType.RedRight,
+                    SOS_Game.PlayerType.RedRight => SOS_Game.PlayerType.BlueLeft,
+                    _ => throw new ArgumentOutOfRangeException("Unknown player turn: " + PlayerTypeTurn)
                 };
             }
 

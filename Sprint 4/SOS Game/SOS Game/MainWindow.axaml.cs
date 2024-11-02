@@ -84,17 +84,17 @@ public partial class MainWindow : Window
             switch (gameBoard.GetWinner())
             {
                 // Draw
-                case Player.None:
+                case PlayerType.None:
                     WinnerNameText.Text = "None (Draw)";
                     WinnerNameText.Foreground = Brushes.MediumPurple;
                     break;
                 // Blue win
-                case Player.BlueLeft:
+                case PlayerType.BlueLeft:
                     WinnerNameText.Text = "Blue!";
                     WinnerNameText.Foreground = Brushes.Blue;
                     break;
                 // Red win
-                case Player.RedRight:
+                case PlayerType.RedRight:
                     WinnerNameText.Text = "Red!";
                     WinnerNameText.Foreground = Brushes.Red;
                     break;
@@ -108,13 +108,13 @@ public partial class MainWindow : Window
             TurnDisplay.Opacity = 100;
             WinnerDisplay.Opacity = 0;
             
-            if (gameBoard.PlayerTurn == Player.BlueLeft)
+            if (gameBoard.PlayerTypeTurn == PlayerType.BlueLeft)
             {
                 //BlueLeft's turn
                 TurnTextBlock.Text = "Blue's Turn";
                 TurnTextBlock.Foreground = Brushes.Blue;
             }
-            else if (gameBoard.PlayerTurn == Player.RedRight)
+            else if (gameBoard.PlayerTypeTurn == PlayerType.RedRight)
             {
                 //RedRight's turn
                 TurnTextBlock.Text = "Red's Turn";
@@ -191,10 +191,10 @@ public partial class MainWindow : Window
         {
             // Variables
             TileType tileSelection;
-            var placingPlayer = gameBoard.PlayerTurn;
+            var placingPlayer = gameBoard.PlayerTypeTurn;
 
             // Get player choices
-            if (placingPlayer == Player.BlueLeft)
+            if (placingPlayer == PlayerType.BlueLeft)
             {
                 //BlueLeft's turn
                 if (BlueSChoice.IsChecked ?? true)
@@ -202,7 +202,7 @@ public partial class MainWindow : Window
                 else
                     tileSelection = TileType.O;
             }
-            else if (placingPlayer == Player.RedRight)
+            else if (placingPlayer == PlayerType.RedRight)
             {
                 //RedRight's turn
                 if (RedSChoice.IsChecked ?? true)
@@ -247,7 +247,7 @@ public partial class MainWindow : Window
             {
                 //Tile was placed successfully
                 // Color letter based on player turn
-                if (placingPlayer == Player.BlueLeft)
+                if (placingPlayer == PlayerType.BlueLeft)
                     button.Foreground = Brushes.Blue;
                 else
                     button.Foreground = Brushes.Red;
@@ -411,7 +411,7 @@ public partial class MainWindow : Window
         {
             StartPoint = startPoint,
             EndPoint = endPoint,
-            Stroke = gameBoard.PlayerTurn == Player.BlueLeft ? Brushes.DarkBlue : Brushes.DarkRed,
+            Stroke = gameBoard.PlayerTypeTurn == PlayerType.BlueLeft ? Brushes.DarkBlue : Brushes.DarkRed,
             StrokeThickness = 40 / (double)currentBoardSize,
         };
 

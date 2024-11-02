@@ -26,24 +26,24 @@ public class Sprint3UnitTests
         generalRadioButton.IsChecked = GameType.General == gameType;
     }
 
-    void setTileChoice(in Player player, in TileType tileChoice, in MainWindow window)
+    void setTileChoice(in PlayerType playerType, in TileType tileChoice, in MainWindow window)
     {
         RadioButton? sRadioButton;
         RadioButton? oRadioButton;
 
-        if (player == Player.BlueLeft)
+        if (playerType == PlayerType.BlueLeft)
         {
             sRadioButton = window.FindControl<RadioButton>("BlueSChoice");
             oRadioButton = window.FindControl<RadioButton>("BlueOChoice");
         }
-        else if (player == Player.RedRight)
+        else if (playerType == PlayerType.RedRight)
         {
             sRadioButton = window.FindControl<RadioButton>("RedSChoice");
             oRadioButton = window.FindControl<RadioButton>("RedOChoice");
         }
         else
             throw new ArgumentException(
-                $"Argument player must be {Player.BlueLeft} or {Player.RedRight}! Given player is {player}");
+                $"Argument player must be {PlayerType.BlueLeft} or {PlayerType.RedRight}! Given player is {playerType}");
         
         Assert.NotNull(sRadioButton);
         Assert.NotNull(oRadioButton);
@@ -88,7 +88,7 @@ public class Sprint3UnitTests
         Assert.Empty(boardCanvas.Children);
 
         // Set Red tile choice to O
-        setTileChoice(Player.RedRight, TileType.O, window);
+        setTileChoice(PlayerType.RedRight, TileType.O, window);
         
         // Make an SOS
         var gameBoardGrid = window.FindControl<UniformGrid>("GameBoardGrid");
@@ -134,7 +134,7 @@ public class Sprint3UnitTests
         window.StartNewGame(null, new RoutedEventArgs());
 
         // Set Red tile choice to O
-        setTileChoice(Player.RedRight, TileType.O, window);
+        setTileChoice(PlayerType.RedRight, TileType.O, window);
         
         // Make an SOS
         var gameBoardGrid = window.FindControl<UniformGrid>("GameBoardGrid");
@@ -155,7 +155,7 @@ public class Sprint3UnitTests
         Assert.True(gameBoard.IsGameOver());
         
         // Verify winner is Red
-        Assert.Equal(Player.RedRight, gameBoard.GetWinner());
+        Assert.Equal(PlayerType.RedRight, gameBoard.GetWinner());
         
         // Test board lock
         var middleLeftButton = gameBoardGrid.Children[3] as Button;
@@ -196,7 +196,7 @@ public class Sprint3UnitTests
         window.StartNewGame(null, new RoutedEventArgs());
 
         // Set Red tile choice to O
-        setTileChoice(Player.RedRight, TileType.O, window);
+        setTileChoice(PlayerType.RedRight, TileType.O, window);
         
         // Make an SOS
         var gameBoardGrid = window.FindControl<UniformGrid>("GameBoardGrid");
@@ -212,7 +212,7 @@ public class Sprint3UnitTests
         
         // Verify game is over and blue won
         Assert.True(gameBoard.IsGameOver());
-        Assert.Equal(Player.BlueLeft, gameBoard.GetWinner());
+        Assert.Equal(PlayerType.BlueLeft, gameBoard.GetWinner());
         
         // Check blue score to verify an SOS was made
         Assert.Equal(3, gameBoard.BlueScore);
@@ -280,7 +280,7 @@ public class Sprint3UnitTests
         Assert.True(gameBoard.IsGameOver());
         
         // Verify the winner is no one
-        Assert.Equal(Player.None, gameBoard.GetWinner());
+        Assert.Equal(PlayerType.None, gameBoard.GetWinner());
         
         // Test board lock
         var middleLeftButton = gameBoardGrid.Children[3] as Button;
@@ -367,7 +367,7 @@ public class Sprint3UnitTests
             BindingFlags.Public | BindingFlags.Instance);
         Assert.NotNull(getWinnerMethod);
         var winner = getWinnerMethod.Invoke(gameBoard, null);
-        Assert.Equal(Player.RedRight, winner);
+        Assert.Equal(PlayerType.RedRight, winner);
 
         // Check the game type
         var getGameTypeMethod = gameBoard.GetType().GetMethod("GetGameType",
@@ -481,7 +481,7 @@ public class Sprint3UnitTests
             BindingFlags.Public | BindingFlags.Instance);
         Assert.NotNull(getWinnerMethod);
         var winner = getWinnerMethod.Invoke(gameBoard, null);
-        Assert.Equal(Player.RedRight, winner); // Assuming "RedRight" is the correct representation of the Red player
+        Assert.Equal(PlayerType.RedRight, winner); // Assuming "RedRight" is the correct representation of the Red player
 
         // Check the game type
         var getGameTypeMethod = gameBoard.GetType().GetMethod("GetGameType",

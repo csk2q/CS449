@@ -1,6 +1,6 @@
 namespace SOS_Game;
 
-public enum Player
+public enum PlayerType
 {
     None,
     BlueLeft,
