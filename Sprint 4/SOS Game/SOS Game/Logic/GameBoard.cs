@@ -181,9 +181,9 @@ public abstract class GameBoard
         return false;
     }
 
-    private Sos[] checkSos(int row, int column)
+    private Sos[] checkSos(int row, int column) => checkSos(row, column, board[row][column]);
+    private Sos[] checkSos(int row, int column, TileType placedTile)
     {
-        var placedTile = board[row][column];
         List<Sos> newSoSes = [];
 
         // Switch on tile type, either S or O
@@ -357,6 +357,25 @@ public abstract class GameBoard
 
             return new TurnResult(new Move(tileType, new Position(row, column)), completedSosArray);
         }
+        
+        // -- Explore first ply of moves
+        // TODO Check that this PriorityQueue sorts things correctly and returns the larger number.
+        PriorityQueue<Move, int> moves = new PriorityQueue<Move, int>(new IntMaxCompare());
+
+        // Find empty tiles
+        List<Position> emptyTiles = [];
+        for (int i = 0; i < size; i++)
+            for (int j = 0; j < size; j++)
+                if (board[i][j] == TileType.None)
+                    emptyTiles.Add(new Position(i, j));
+
+        foreach (Position emptyTile in emptyTiles)
+        {
+            // TODO Save result to  PriorityQueue<Move, int> moves based on number of SOSes made
+            checkSos(emptyTile.row, emptyTile.column, TileType.S);
+            checkSos(emptyTile.row, emptyTile.column, TileType.O);
+        }
+
 
         /*
          * AC 8.2 Computer makes an SOS
