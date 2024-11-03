@@ -2,10 +2,11 @@
 
 namespace SOS_Game.Logic;
 
-public class IntMaxCompare : IComparer<int>
+
+public class IntPickMaxCompare : IComparer<int>
 {
     public int Compare(int x, int y)
     {
-        return x - y;
+        return y - x;
     }
 }
