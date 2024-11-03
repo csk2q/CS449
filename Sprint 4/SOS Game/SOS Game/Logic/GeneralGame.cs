@@ -7,6 +7,11 @@ public sealed class GeneralGame : GameBoard
         
     }
 
+    public GeneralGame(GameBoard other) : base(other)
+    {
+        
+    }
+
     public override GameType GetGameType() => GameType.General;
 
     public override bool IsGameOver() => IsBoardFilled();

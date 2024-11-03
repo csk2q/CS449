@@ -9,6 +9,11 @@ public sealed class SimpleGame : GameBoard
         
     }
 
+    public SimpleGame(GameBoard game) : base(game)
+    {
+        
+    }
+
     public override GameType GetGameType() => GameType.Simple;
 
     public override bool IsGameOver()

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace SOS_Game.Logic;
 
@@ -28,7 +29,7 @@ public abstract class GameBoard
     private TileType[][] board;
     private readonly int size;
 
-    Random random = new Random();
+    private Random random = new Random();
 
     //Turn stuff
     protected record Turn(PlayerType Player, Position Position, TileType TileType);
@@ -48,6 +49,18 @@ public abstract class GameBoard
             board[i] = new TileType[size];
     }
 
+    // Copy constructor
+    protected GameBoard(GameBoard other)
+    {
+        board = other.board.Select(a => (TileType[])a.Clone()).ToArray();
+        size = other.size;
+        PlayerTypeTurn = other.PlayerTypeTurn;
+        Blue = other.Blue;
+        Red = other.Red;
+        random = other.random;
+        turnRecord = other.turnRecord;
+    }
+
     // Create Method //
 
     public static GameBoard CreateNewGame(GameType gameType, int boardSize, bool isBlueComputer, bool isRedComputer)
@@ -62,6 +75,26 @@ public abstract class GameBoard
                 return new GeneralGame(boardSize, isBlueComputer, isRedComputer);
                 break;
         }
+    }
+
+    // Clone method
+
+    protected static GameBoard CloneGameBoard(GameBoard other)
+    {
+        GameBoard newGameBoard;
+
+        switch (other.GetGameType())
+        {
+            default:
+            case GameType.Simple:
+                newGameBoard = new SimpleGame(other);
+                break;
+            case GameType.General:
+                newGameBoard = new GeneralGame(other);
+                break;
+        }
+
+        return newGameBoard;
     }
 
     // Abstract functions //
