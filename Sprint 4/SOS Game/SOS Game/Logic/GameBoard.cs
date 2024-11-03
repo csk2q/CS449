@@ -132,7 +132,7 @@ public abstract class GameBoard
             return PlayerType.None;
     }
 
-    public bool IsCurentPlayerComputer()
+    public bool IsCurrentPlayerComputer()
     {
         if (PlayerTypeTurn == PlayerType.BlueLeft)
             return Blue.IsComputer;
@@ -149,6 +149,12 @@ public abstract class GameBoard
     public TileType[][] GetBoardState()
     {
         return board;
+    }
+
+    private TileType getRandomTileType()
+    {
+        // Randomly choose the tile either S(1) or O(2)
+        return (TileType)random.Next(1, 3);
     }
 
     // Business Functions //
@@ -215,6 +221,7 @@ public abstract class GameBoard
     }
 
     private Sos[] checkSos(int row, int column) => checkSos(row, column, board[row][column]);
+
     private Sos[] checkSos(int row, int column, TileType placedTile)
     {
         List<Sos> newSoSes = [];
@@ -347,7 +354,7 @@ public abstract class GameBoard
     {
         List<TurnResult> moves = [];
 
-        while (IsCurentPlayerComputer() && !IsGameOver())
+        while (IsCurrentPlayerComputer() && !IsGameOver())
         {
             var newMove = makeComputerMove();
             moves.Add(newMove);
@@ -381,7 +388,7 @@ public abstract class GameBoard
                 column = random.Next(0, size);
 
                 // Randomly choose the tile either S(1) or O(2)
-                tileType = (TileType)random.Next(1, 3);
+                tileType = getRandomTileType();
 
                 success = PlaceTile(row, column, tileType, out completedSosArray);
 
@@ -390,23 +397,25 @@ public abstract class GameBoard
 
             return new TurnResult(new Move(tileType, new Position(row, column)), completedSosArray);
         }
-        
+
         // -- Explore first ply of moves
         // TODO Check that this PriorityQueue sorts things correctly and returns the larger number.
-        PriorityQueue<Move, int> moves = new PriorityQueue<Move, int>(new IntMaxCompare());
+        var moves = new PriorityQueue<Move, int>(new IntPickMaxCompare());
 
         // Find empty tiles
         List<Position> emptyTiles = [];
         for (int i = 0; i < size; i++)
-            for (int j = 0; j < size; j++)
-                if (board[i][j] == TileType.None)
-                    emptyTiles.Add(new Position(i, j));
+        for (int j = 0; j < size; j++)
+            if (board[i][j] == TileType.None)
+                emptyTiles.Add(new Position(i, j));
 
         foreach (Position emptyTile in emptyTiles)
         {
             // TODO Save result to  PriorityQueue<Move, int> moves based on number of SOSes made
-            checkSos(emptyTile.row, emptyTile.column, TileType.S);
-            checkSos(emptyTile.row, emptyTile.column, TileType.O);
+            moves.Enqueue(new Move(TileType.S, emptyTile),
+                checkSos(emptyTile.row, emptyTile.column, TileType.S).Length);
+            moves.Enqueue(new Move(TileType.S, emptyTile),
+                checkSos(emptyTile.row, emptyTile.column, TileType.O).Length);
         }
 
 
@@ -417,6 +426,13 @@ public abstract class GameBoard
          * And: A valid SOS can be completed
          * Then: The computer should place the tile needed to complete the SOS
          */
+        if (moves.TryPeek(out var bestMove, out var sosCount) && sosCount > 0)
+        {
+            var success = PlaceTile(bestMove.Position.row, bestMove.Position.column, bestMove.Tile,
+                out var completedSosArray);
+            Debug.Assert(success, "Failed to place tile?");
+            return new TurnResult(bestMove, completedSosArray);
+        }
 
         /*
          * AC 8.3 Computer makes a blocking move
@@ -424,7 +440,23 @@ public abstract class GameBoard
          * When: It is the computer’s turn
          * And: There are no SOSes to complete
          * Then: The computer should attempt to make a “blocking” move so that the human cannot score a point next turn if possible.
-         * */
+         */
+        // Search a second ply for blocking moves
+        // If we reach moves that give the other player a score we can move on.
+        var zeroScoreMoves = new List<Move>();
+        while (moves.TryDequeue(out bestMove, out sosCount) && sosCount == 0)
+        {
+            zeroScoreMoves.Add(bestMove);
+
+            var nextState = CloneGameBoard(this);
+            nextState.PlaceTile(bestMove.Position.row, bestMove.Position.column, bestMove.Tile, out var sosArray);
+
+            // TODO Continue here
+            // Get empty tiles
+            // And search for blocking moves (moves that won't score a point for the other player)
+            // Take first find?
+        }
+
 
         /*
          * AC 8.4 Computer makes a random Move
@@ -432,5 +464,11 @@ public abstract class GameBoard
          * When: The computer cannot make an SOS nor make a blocking move.
          * Then: The computer will make a random valid move.
          */
+        var randomTileIndex = random.Next(0, emptyTiles.Count);
+        var randPos = emptyTiles[randomTileIndex];
+        var randTile = getRandomTileType();
+        var didPlaceTile = PlaceTile(randPos.row, randPos.column, randTile, out Sos[] finalSosArray);
+        Debug.Assert(didPlaceTile, "Failed to place tile?");
+        return new TurnResult(new Move(randTile, randPos), finalSosArray);
     }
 }
