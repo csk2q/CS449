@@ -221,26 +221,6 @@ public partial class MainWindow : Window
             foreach (var sos in completedSosArray)
             {
                 markSos(sos);
-
-                // TODO REMOVE DEPRECATED
-                // Color background of buttons in completed sos
-                /*Position[] tiles = [sos.S1, sos.O, sos.S2];
-                foreach (var position in tiles)
-                {
-                    Button? curTile = getTile(position.row, position.column);
-                    Debug.Assert(curTile is not null);
-                    if (curTile is not null)
-                    {
-                        // Color letter based on player turn
-                        if (placingPlayer == Player.BlueLeft)
-                            curTile.Background = Brushes.DarkBlue;
-                        else
-                            curTile.Background = Brushes.DarkRed;
-                    }
-                    else
-                        throw new ApplicationException(
-                            $"Could not find tile {position.row}, {position.column}! Yet, it was part of an SOS?");
-                }*/
             }
 
             if (result)
