@@ -13,7 +13,7 @@
     <Window.Resources>
         <!-- <converters:InvertedBooleanConverter x:Key="InvertedBooleanConverter"/> -->
     </Window.Resources>
-    
+
 
     <Grid ColumnDefinitions="*,2*,*" RowDefinitions="*,3.3*,*" ShowGridLines="False">
 
@@ -36,46 +36,83 @@
             <NumericUpDown Name="BoardSizeNumericUpDown" FontSize="19" Increment="1"
                            Value="{x:Static logic:GameBoard.DefaultBoardSize}"
                            Minimum="{x:Static logic:GameBoard.MinBoardSize}"
-                           Maximum="{x:Static logic:GameBoard.MaxBoardSize}"  />
+                           Maximum="{x:Static logic:GameBoard.MaxBoardSize}" />
 
         </StackPanel>
 
         <!-- LeftPlayer -->
         <StackPanel Grid.Row="1" Grid.Column="0"
                     HorizontalAlignment="Center" VerticalAlignment="Center">
+
+
+            <Separator></Separator>
+
             <TextBlock FontSize="25">Blue Player</TextBlock>
-            
+
+            <Separator></Separator>
+
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
                         Orientation="Horizontal" Spacing="5">
                 <TextBlock FontSize="20" VerticalAlignment="Center">Score:</TextBlock>
                 <TextBlock Name="BlueScore" FontSize="20" VerticalAlignment="Center" Foreground="Blue">?</TextBlock>
             </StackPanel>
 
-            <RadioButton GroupName="BluePlayerTileChoice" Name="BlueSChoice" FontSize="20" IsChecked="True">
-                S
-            </RadioButton>
-            <RadioButton GroupName="BluePlayerTileChoice" Name="BlueOChoice" FontSize="20" IsChecked="False">
-                O
-            </RadioButton>
+            <Separator></Separator>
+
+            <StackPanel HorizontalAlignment="Center">
+                <TextBlock FontSize="17" VerticalAlignment="Center">Tile choice:</TextBlock>
+                <RadioButton GroupName="BluePlayerTileChoice" Name="BlueSChoice" FontSize="20" IsChecked="True">
+                    S
+                </RadioButton>
+                <RadioButton GroupName="BluePlayerTileChoice" Name="BlueOChoice" FontSize="20" IsChecked="False">
+                    O
+                </RadioButton>
+            </StackPanel>
+
+            <Separator></Separator>
+
+            <StackPanel HorizontalAlignment="Center">
+                <RadioButton Name="BlueHumanRadioButton" FontSize="17" VerticalAlignment="Center" IsChecked="True">Human</RadioButton>
+                <RadioButton Name="BlueComputerRadioButton" FontSize="17" VerticalAlignment="Center">Computer</RadioButton>
+            </StackPanel>
+
         </StackPanel>
 
         <!-- Right Player -->
         <StackPanel Grid.Row="1" Grid.Column="2"
+
                     HorizontalAlignment="Center" VerticalAlignment="Center">
+
+
             <TextBlock FontSize="25">Red Player</TextBlock>
-            
+            <Separator></Separator>
+
+
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
                         Orientation="Horizontal" Spacing="5">
                 <TextBlock FontSize="20" VerticalAlignment="Center">Score:</TextBlock>
                 <TextBlock Name="RedScore" FontSize="20" VerticalAlignment="Center" Foreground="Red">?</TextBlock>
             </StackPanel>
 
-            <RadioButton GroupName="RedPlayerTileChoice" Name="RedSChoice" FontSize="20" IsChecked="True">
-                S
-            </RadioButton>
-            <RadioButton GroupName="RedPlayerTileChoice" Name="RedOChoice" FontSize="20" IsChecked="False">
-                O
-            </RadioButton>
+            <Separator></Separator>
+
+            <StackPanel HorizontalAlignment="Center">
+
+                <TextBlock FontSize="17" VerticalAlignment="Center">Tile choice:</TextBlock>
+
+                <RadioButton GroupName="RedPlayerTileChoice" Name="RedSChoice" FontSize="20" IsChecked="True">
+                    S
+                </RadioButton>
+                <RadioButton GroupName="RedPlayerTileChoice" Name="RedOChoice" FontSize="20" IsChecked="False">
+                    O
+                </RadioButton>
+            </StackPanel>
+            <Separator></Separator>
+
+            <StackPanel HorizontalAlignment="Center">
+                <RadioButton Name="RedHumanRadioButton" FontSize="17" VerticalAlignment="Center" IsChecked="True">Human</RadioButton>
+                <RadioButton Name="RedComputerRadioButton" FontSize="17" VerticalAlignment="Center">Computer</RadioButton>
+            </StackPanel>
 
         </StackPanel>
 
@@ -88,7 +125,7 @@
             <TextBlock Name="TurnTextBlock" FontSize="20" VerticalAlignment="Center">???'s turn.</TextBlock>
 
         </StackPanel>
-        
+
         <!-- Winner Display-->
         <StackPanel Name="WinnerDisplay" Grid.Row="2" Grid.Column="1"
                     Opacity="0" Background="DarkGreen"
@@ -96,7 +133,10 @@
                     Orientation="Horizontal" Spacing="5">
 
             <TextBlock Name="WinnerText" FontSize="25" VerticalAlignment="Center" FontWeight="Bold">The winner is: </TextBlock>
-            <TextBlock Name="WinnerNameText" FontSize="25" VerticalAlignment="Center" FontWeight="Bold" FontStyle="Italic">???</TextBlock>
+            <TextBlock Name="WinnerNameText" FontSize="25" VerticalAlignment="Center" FontWeight="Bold"
+                       FontStyle="Italic">
+                ???
+            </TextBlock>
 
 
         </StackPanel>
@@ -111,21 +151,21 @@
         <!-- Game Board -->
         <Border Name="GameBoarder" Grid.Row="1" Grid.Column="1"
                 BorderBrush="White" BorderThickness="0">
-                <UniformGrid x:Name="GameBoardGrid" Grid.Row="1" Grid.Column="1"
-                             HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
-                             Margin="0" SizeChanged="GameBoardGrid_OnSizeChanged">
-                    
-                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Background="Gray">
-                        <TextBlock FontSize="19" HorizontalAlignment="Center">Choose your settings,</TextBlock>
-                        <TextBlock FontSize="19" HorizontalAlignment="Center">then press New Game to start!</TextBlock>
-                    </StackPanel>
-                    
-                </UniformGrid>
+            <UniformGrid x:Name="GameBoardGrid" Grid.Row="1" Grid.Column="1"
+                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                         Margin="0" SizeChanged="GameBoardGrid_OnSizeChanged">
+
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Background="Gray">
+                    <TextBlock FontSize="19" HorizontalAlignment="Center">Choose your settings,</TextBlock>
+                    <TextBlock FontSize="19" HorizontalAlignment="Center">then press New Game to start!</TextBlock>
+                </StackPanel>
+
+            </UniformGrid>
         </Border>
-        
+
         <!-- Line Canvas for completed SOS -->
         <Canvas Grid.Row="1" Grid.Column="1" x:Name="BoardCanvas" IsHitTestVisible="False">
-            
+
         </Canvas>
 
     </Grid>

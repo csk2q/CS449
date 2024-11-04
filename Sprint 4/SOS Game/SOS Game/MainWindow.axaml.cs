@@ -17,7 +17,7 @@ public partial class MainWindow : Window
     // Variables //
 
     private int currentBoardSize;
-    private GameBoard gameBoard = new SimpleGame(0);
+    private GameBoard gameBoard = new SimpleGame(0, false, false);
 
 
     // Constructor //
@@ -160,6 +160,23 @@ public partial class MainWindow : Window
         return null;
     }
 
+    private bool getIsComputer(PlayerType playerType)
+    {
+        switch (playerType)
+        {
+            case PlayerType.BlueLeft:
+                return BlueComputerRadioButton.IsChecked!.Value;
+                break;
+            case PlayerType.RedRight:
+                return RedComputerRadioButton.IsChecked!.Value;
+                break;
+            
+            case PlayerType.None:
+            default:
+                throw new ArgumentOutOfRangeException(nameof(playerType), playerType, "Player type must be either Blue or Red.");
+        }
+    }
+
 
     // Event handlers //
 
@@ -260,7 +277,7 @@ public partial class MainWindow : Window
         //Set up variables
         var newTiles = new List<Button>(boardSize);
 
-        gameBoard = GameBoard.CreateNewGame(gameMode, boardSize);
+        gameBoard = GameBoard.CreateNewGame(gameMode, boardSize, getIsComputer(PlayerType.BlueLeft), getIsComputer(PlayerType.RedRight));
 
         //Generate new tiles
         for (int i = 0; i < Math.Pow(boardSize, 2); i++)
