@@ -57,7 +57,7 @@ public class ACUnitTests
             // Set player turn
             var gameBoardFieldInfo =
                 typeof(MainWindow).GetField("gameBoard", BindingFlags.NonPublic | BindingFlags.Instance);
-            var playerTurnProperty = typeof(GameBoard).GetProperty("PlayerTurn",
+            var playerTurnProperty = typeof(GameBoard).GetProperty("curPlayerTurn",
                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             Assert.NotNull(gameBoardFieldInfo);
             Assert.NotNull(playerTurnProperty);
@@ -103,7 +103,7 @@ public class ACUnitTests
             Assert.Equal(Enum.GetName(tileSelection), emptyTile.Content);
 
             // Assert that the player's turn has switched
-            Assert.NotEqual(playerType, gameBoard.PlayerTypeTurn);
+            Assert.NotEqual(playerType, gameBoard.curPlayerTurn);
         }
     }
 
@@ -147,7 +147,7 @@ public class ACUnitTests
             // Set player turn
             var gameBoardFieldInfo =
                 typeof(MainWindow).GetField("gameBoard", BindingFlags.NonPublic | BindingFlags.Instance);
-            var playerTurnProperty = typeof(GameBoard).GetProperty("PlayerTurn",
+            var playerTurnProperty = typeof(GameBoard).GetProperty("curPlayerTurn",
                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             Assert.NotNull(gameBoardFieldInfo);
             Assert.NotNull(playerTurnProperty);
@@ -212,7 +212,7 @@ public class ACUnitTests
             Assert.Equal(Enum.GetName(tileSelection), emptyTile.Content);
 
             // Assert that the player's turn has switched
-            Assert.NotEqual(playerType, gameBoard.PlayerTypeTurn);
+            Assert.NotEqual(playerType, gameBoard.curPlayerTurn);
 
             // Trigger click to try to place on that tile again
             emptyTile.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
@@ -507,7 +507,7 @@ public class ACUnitTests
         // Get player turn variable
         var gameBoardFieldInfo =
             typeof(MainWindow).GetField("gameBoard", BindingFlags.NonPublic | BindingFlags.Instance);
-        var playerTurnProperty = typeof(GameBoard).GetProperty("PlayerTurn",
+        var playerTurnProperty = typeof(GameBoard).GetProperty("curPlayerTurn",
             BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         Assert.NotNull(gameBoardFieldInfo);
         Assert.NotNull(playerTurnProperty);

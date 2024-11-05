@@ -2,11 +2,11 @@
 
 namespace SOS_Game.Logic;
 
-public struct Player
+public class Player
 {
     // Variables //
     public readonly PlayerType PlayerType;
-    public int Score { get; private set; } = 0;
+    public int Score;
     public readonly bool IsComputer;
 
     // Constructor //
@@ -18,16 +18,17 @@ public struct Player
         
         this.PlayerType = playerType;
         this.IsComputer = isComputer;
+        Score = 0;
+    }
+    
+    public Player(Player otherPlayer)
+    {
+        this.PlayerType = otherPlayer.PlayerType;
+        this.IsComputer = otherPlayer.IsComputer;
+        Score = otherPlayer.Score;
     }
     
     // Getters & Setters //
-
-    // Adds the given points to the player's score
-    // Returns the total score.
-    public int ScorePoint(int points = 1)
-    {
-        return Score += points;
-    }
 
 
 }

@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace SOS_Game.Logic;
 
-public abstract class GameBoard
+public abstract class GameBoard : IDisposable
 {
     // Constants //
 
@@ -14,12 +14,18 @@ public abstract class GameBoard
     public const decimal MinBoardSize = 3;
     public const decimal MaxBoardSize = 20;
 
+    // Events //
+
+    public delegate void OnGameBoardUpdate(TurnResult turn);
+
+    private event OnGameBoardUpdate? OnBoardUpdateEvent;
 
     // Public Variables //
+    public bool IsGameStarted { get; private set; }
 
     // Blue goes first
     // TODO allow setting who plays first?
-    public PlayerType PlayerTypeTurn { get; private set; } = PlayerType.BlueLeft;
+    public PlayerType curPlayerTurn { get; private set; } = PlayerType.BlueLeft;
     public Player Blue { get; init; }
     public Player Red { get; init; }
 
@@ -42,6 +48,8 @@ public abstract class GameBoard
     {
         //Set variables
         this.size = (int)Math.Clamp(size, MinBoardSize, MaxBoardSize);
+        Blue = new Player(PlayerType.BlueLeft, isBlueComputer);
+        Red = new Player(PlayerType.RedRight, isRedComputer);
 
         // Generate board
         board = new TileType[size][];
@@ -54,27 +62,32 @@ public abstract class GameBoard
     {
         board = other.board.Select(a => (TileType[])a.Clone()).ToArray();
         size = other.size;
-        PlayerTypeTurn = other.PlayerTypeTurn;
-        Blue = other.Blue;
-        Red = other.Red;
+        curPlayerTurn = other.curPlayerTurn;
+        Blue = new Player(other.Blue);
+        Red = new Player(other.Red);
         random = other.random;
-        turnRecord = other.turnRecord;
+        turnRecord = new List<Turn>(other.turnRecord);
+        OnBoardUpdateEvent = null;
     }
 
     // Create Method //
 
     public static GameBoard CreateNewGame(GameType gameType, int boardSize, bool isBlueComputer, bool isRedComputer)
     {
+        GameBoard newGame;
+
         switch (gameType)
         {
             default:
             case GameType.Simple:
-                return new SimpleGame(boardSize, isBlueComputer, isRedComputer);
+                newGame = new SimpleGame(boardSize, isBlueComputer, isRedComputer);
                 break;
             case GameType.General:
-                return new GeneralGame(boardSize, isBlueComputer, isRedComputer);
+                newGame = new GeneralGame(boardSize, isBlueComputer, isRedComputer);
                 break;
         }
+
+        return newGame;
     }
 
     // Clone method
@@ -95,6 +108,12 @@ public abstract class GameBoard
         }
 
         return newGameBoard;
+    }
+
+    // Dispose Function //
+    public void Dispose()
+    {
+        OnBoardUpdateEvent = null;
     }
 
     // Abstract functions //
@@ -134,9 +153,9 @@ public abstract class GameBoard
 
     public bool IsCurrentPlayerComputer()
     {
-        if (PlayerTypeTurn == PlayerType.BlueLeft)
+        if (curPlayerTurn == PlayerType.BlueLeft)
             return Blue.IsComputer;
-        if (PlayerTypeTurn == PlayerType.RedRight)
+        if (curPlayerTurn == PlayerType.RedRight)
             return Red.IsComputer;
         return false;
     }
@@ -168,9 +187,47 @@ public abstract class GameBoard
         return emptyTiles;
     }
 
+    public void SubscribeToBoardChanges(OnGameBoardUpdate handler)
+    {
+        OnBoardUpdateEvent += handler;
+    }
+
     // Business Functions //
 
-    public bool PlaceTile(int row, int column, TileType tileType, out Sos[] completedSosArray)
+    public bool StartGame()
+    {
+        if (!IsGameStarted)
+        {
+            IsGameStarted = true;
+            tickComputerPlayers();
+        }
+        else
+        {
+            throw new InvalidOperationException("Game already started");
+        }
+
+        return IsGameStarted;
+    }
+
+    public bool PlaceTile(int row, int column, TileType tileType)
+    {
+        if (IsGameStarted)
+        {
+            var placingPlayerTurn = curPlayerTurn;
+            
+            var didPlace = placeTile(row, column, tileType, out Sos[] completedSosArray);
+            if (didPlace)
+            {
+                OnBoardUpdateEvent?.Invoke(new TurnResult(new Move(tileType, new Position(row, column)), completedSosArray, placingPlayerTurn));
+                tickComputerPlayers();
+            }
+            return didPlace;
+        }
+        else
+            throw new InvalidOperationException("Game not started. Start the game first!");
+    }
+
+    private bool placeTile(int row, int column, TileType tileType, out Sos[] completedSosArray)
     {
         // Don't place if the game is over or the board is filled
         if (IsGameOver() || IsBoardFilled())
@@ -187,7 +244,7 @@ public abstract class GameBoard
             board[row][column] = tileType;
 
             // Update game record
-            turnRecord.Add(new Turn(PlayerTypeTurn, new Position(row, column), tileType));
+            turnRecord.Add(new Turn(curPlayerTurn, new Position(row, column), tileType));
 
             //TODO check for SOS
             completedSosArray = checkSos(row, column);
@@ -199,26 +256,26 @@ public abstract class GameBoard
             if (completedSosArray.Length > 0)
             {
                 // Add score
-                switch (PlayerTypeTurn)
+                switch (curPlayerTurn)
                 {
                     case PlayerType.BlueLeft:
-                        Blue.ScorePoint();
+                        Blue.Score += completedSosArray.Length;
                         break;
                     case PlayerType.RedRight:
-                        Red.ScorePoint();
+                        Red.Score += completedSosArray.Length;
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException("Unknown player turn: " + PlayerTypeTurn);
+                        throw new ArgumentOutOfRangeException("Unknown player turn: " + curPlayerTurn);
                 }
             }
             else // No SOSes were made
             {
                 // Change turn
-                PlayerTypeTurn = PlayerTypeTurn switch
+                curPlayerTurn = curPlayerTurn switch
                 {
                     PlayerType.BlueLeft => PlayerType.RedRight,
                     PlayerType.RedRight => PlayerType.BlueLeft,
-                    _ => throw new ArgumentOutOfRangeException("Unknown player turn: " + PlayerTypeTurn)
+                    _ => throw new ArgumentOutOfRangeException("Unknown player turn: " + curPlayerTurn)
                 };
             }
 
@@ -360,22 +417,20 @@ public abstract class GameBoard
         return newSoSes.ToArray();
     }
 
-    // Call to have computer players make their moves?
-    private List<TurnResult> tickComputerPlayers()
+    // Call to have computer players make their moves
+    private void tickComputerPlayers()
     {
-        List<TurnResult> moves = [];
-
         while (IsCurrentPlayerComputer() && !IsGameOver())
         {
-            var newMove = makeComputerMove();
-            moves.Add(newMove);
+            var turn = makeComputerMove();
+            OnBoardUpdateEvent?.Invoke(turn);
         }
-
-        return moves;
     }
 
     private TurnResult makeComputerMove()
     {
+        var placingPlayerTurn = curPlayerTurn;
+        
         // Read AC 8 for the logic to implement
         /*
          * AC 8.1 Computer takes the first turn
@@ -401,12 +456,12 @@ public abstract class GameBoard
                 // Randomly choose the tile either S(1) or O(2)
                 tileType = getRandomTileType();
 
-                success = PlaceTile(row, column, tileType, out completedSosArray);
+                success = placeTile(row, column, tileType, out completedSosArray);
 
                 Debug.Assert(success, "Failed to place tile?");
             } while (!success);
 
-            return new TurnResult(new Move(tileType, new Position(row, column)), completedSosArray);
+            return new TurnResult(new Move(tileType, new Position(row, column)), completedSosArray, placingPlayerTurn);
         }
 
         // -- Explore first ply of moves
@@ -435,10 +490,10 @@ public abstract class GameBoard
          */
         if (moves.TryPeek(out var bestMove, out var sosCount) && sosCount > 0)
         {
-            var success = PlaceTile(bestMove.Position.row, bestMove.Position.column, bestMove.Tile,
+            var success = placeTile(bestMove.Position.row, bestMove.Position.column, bestMove.Tile,
                 out var completedSosArray);
             Debug.Assert(success, "Failed to place tile?");
-            return new TurnResult(bestMove, completedSosArray);
+            return new TurnResult(bestMove, completedSosArray, placingPlayerTurn);
         }
 
         /*
@@ -453,13 +508,10 @@ public abstract class GameBoard
         // For the second ply of moves we want a min-heap since this our opponents score.
         // (Priority queue is a min-heap by default.)
         var ply2Moves = new PriorityQueue<(Move ply1, Move ply2), int>();
-        var ply1ZeroScoreMoves = new List<Move>();
         while (moves.TryDequeue(out bestMove, out sosCount) && sosCount == 0)
         {
-            ply1ZeroScoreMoves.Add(bestMove);
-
             var nextState = CloneGameBoard(this);
-            nextState.PlaceTile(bestMove.Position.row, bestMove.Position.column, bestMove.Tile, out var sosArray);
+            nextState.placeTile(bestMove.Position.row, bestMove.Position.column, bestMove.Tile, out var sosArray);
 
             // Get empty tiles in next state
             // And search for blocking moves (moves that won't score a point for the other player)
@@ -472,15 +524,17 @@ public abstract class GameBoard
                 ply2Moves.Enqueue((bestMove, new Move(TileType.O, emptyTile)),
                     checkSos(emptyTile.row, emptyTile.column, TileType.O).Length);
             }
-
         }
+
+        // TODO check that this is working correctly and make a test case.
         if (ply2Moves.Count > 0)
         {
             bestMove = ply2Moves.Dequeue().ply1;
-            var placeTileResult = PlaceTile(bestMove.Position.row, bestMove.Position.column, bestMove.Tile,
+            var placeTileResult = placeTile(bestMove.Position.row, bestMove.Position.column, bestMove.Tile,
                 out Sos[] resultSosArray);
+            if(placeTileResult)
+                return new TurnResult(bestMove, resultSosArray, placingPlayerTurn);
             Debug.Assert(placeTileResult, "Failed to place tile?");
-            return new TurnResult(bestMove, resultSosArray);
         }
 
 
@@ -490,11 +544,12 @@ public abstract class GameBoard
          * When: The computer cannot make an SOS nor make a blocking move.
          * Then: The computer will make a random valid move.
          */
+        Debug.Assert(false, "We had to make a random move.");
         var randomTileIndex = random.Next(0, emptyTiles.Count);
         var randPos = emptyTiles[randomTileIndex];
         var randTile = getRandomTileType();
-        var didPlaceTile = PlaceTile(randPos.row, randPos.column, randTile, out Sos[] finalSosArray);
+        var didPlaceTile = placeTile(randPos.row, randPos.column, randTile, out Sos[] finalSosArray);
         Debug.Assert(didPlaceTile, "Failed to place tile?");
-        return new TurnResult(new Move(randTile, randPos), finalSosArray);
+        return new TurnResult(new Move(randTile, randPos), finalSosArray, placingPlayerTurn);
     }
 }

@@ -101,20 +101,19 @@ public partial class MainWindow : Window
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            
         }
         else
         {
             TurnDisplay.Opacity = 100;
             WinnerDisplay.Opacity = 0;
-            
-            if (gameBoard.PlayerTypeTurn == PlayerType.BlueLeft)
+
+            if (gameBoard.curPlayerTurn == PlayerType.BlueLeft)
             {
                 //BlueLeft's turn
                 TurnTextBlock.Text = "Blue's Turn";
                 TurnTextBlock.Foreground = Brushes.Blue;
             }
-            else if (gameBoard.PlayerTypeTurn == PlayerType.RedRight)
+            else if (gameBoard.curPlayerTurn == PlayerType.RedRight)
             {
                 //RedRight's turn
                 TurnTextBlock.Text = "Red's Turn";
@@ -162,19 +161,23 @@ public partial class MainWindow : Window
 
     private bool getIsComputer(PlayerType playerType)
     {
+        bool result;
         switch (playerType)
         {
+            
             case PlayerType.BlueLeft:
-                return BlueComputerRadioButton.IsChecked!.Value;
+                result =  BlueComputerRadioButton.IsChecked.Value;
                 break;
             case PlayerType.RedRight:
-                return RedComputerRadioButton.IsChecked!.Value;
+                result = RedComputerRadioButton.IsChecked.Value;
                 break;
-            
+
             case PlayerType.None:
             default:
-                throw new ArgumentOutOfRangeException(nameof(playerType), playerType, "Player type must be either Blue or Red.");
+                throw new ArgumentOutOfRangeException(nameof(playerType), playerType,
+                    "Player type must be either Blue or Red.");
         }
+        return result;
     }
 
 
@@ -199,6 +202,33 @@ public partial class MainWindow : Window
         }
     }
 
+    private void onBoardUpdateHandler(TurnResult turn)
+    {
+        var completedSosArray = turn.SosMade;
+        var button = getTile(turn.Move.Position.row, turn.Move.Position.column);
+        
+        Debug.Assert(button is not null, "button is null?");            
+
+        // For every completed SOS
+        foreach (var sos in completedSosArray)
+        {
+            markSos(sos);
+        }
+
+        // Tile was placed successfully
+        // Color letter based on player turn
+        if (turn.placingPlayer == PlayerType.BlueLeft)
+            button.Foreground = Brushes.Blue;
+        else
+            button.Foreground = Brushes.Red;
+
+        // Set tile letter
+        button.Content = Enum.GetName(turn.Move.Tile);
+
+        updateTurnText();
+        updateScoreText();
+    }
+
 
     // UI Logic //
 
@@ -208,7 +238,7 @@ public partial class MainWindow : Window
         {
             // Variables
             TileType tileSelection;
-            var placingPlayer = gameBoard.PlayerTypeTurn;
+            var placingPlayer = gameBoard.curPlayerTurn;
 
             // Get player choices
             if (placingPlayer == PlayerType.BlueLeft)
@@ -231,36 +261,9 @@ public partial class MainWindow : Window
                 throw new ApplicationException($"Unknown Player turn! \"{placingPlayer}\" is not a valid player.");
 
             // Try place tile
-            bool result = gameBoard.PlaceTile(Grid.GetRow(button), Grid.GetColumn(button), tileSelection,
-                out Sos[] completedSosArray);
-
-            // For every completed SOS
-            foreach (var sos in completedSosArray)
-            {
-                markSos(sos);
-            }
-
-            if (result)
-            {
-                //Tile was placed successfully
-                // Color letter based on player turn
-                if (placingPlayer == PlayerType.BlueLeft)
-                    button.Foreground = Brushes.Blue;
-                else
-                    button.Foreground = Brushes.Red;
-
-                // Set tile letter
-                button.Content = Enum.GetName(tileSelection);
-            }
-            else
-            {
-                //Failed to place tile
-                Debug.WriteLine(
-                    $"Failed to place tile {tileSelection} at Row:{Grid.GetRow(button)}, Column:{Grid.GetColumn(button)}. (From top left corner.)");
-            }
-
-            updateTurnText();
-            updateScoreText();
+            bool result = gameBoard.PlaceTile(Grid.GetRow(button), Grid.GetColumn(button), tileSelection);
+            
+            // TODO do I need to do anything _here_ after placing a tile? Or do I do everything in 
         }
         else
             Debug.Assert(false, "ClickTile called but sender is not a button! Sender: " + sender);
@@ -268,6 +271,9 @@ public partial class MainWindow : Window
 
     public void StartNewGame(object? sender, RoutedEventArgs e)
     {
+        // Get rid of old board
+        gameBoard.Dispose();
+        
         // Get input
         var boardSize = currentBoardSize = getBoardSizeInput();
 
@@ -277,7 +283,9 @@ public partial class MainWindow : Window
         //Set up variables
         var newTiles = new List<Button>(boardSize);
 
-        gameBoard = GameBoard.CreateNewGame(gameMode, boardSize, getIsComputer(PlayerType.BlueLeft), getIsComputer(PlayerType.RedRight));
+        gameBoard = GameBoard.CreateNewGame(gameMode, boardSize, getIsComputer(PlayerType.BlueLeft),
+            getIsComputer(PlayerType.RedRight));
+        gameBoard.SubscribeToBoardChanges(onBoardUpdateHandler);
 
         //Generate new tiles
         for (int i = 0; i < Math.Pow(boardSize, 2); i++)
@@ -309,6 +317,8 @@ public partial class MainWindow : Window
 
         updateTurnText();
         updateScoreText();
+
+        gameBoard.StartGame();
     }
 
 
@@ -408,7 +418,7 @@ public partial class MainWindow : Window
         {
             StartPoint = startPoint,
             EndPoint = endPoint,
-            Stroke = gameBoard.PlayerTypeTurn == PlayerType.BlueLeft ? Brushes.DarkBlue : Brushes.DarkRed,
+            Stroke = gameBoard.curPlayerTurn == PlayerType.BlueLeft ? Brushes.DarkBlue : Brushes.DarkRed,
             StrokeThickness = 40 / (double)currentBoardSize,
         };
 
