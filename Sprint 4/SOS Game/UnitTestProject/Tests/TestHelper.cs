@@ -1,5 +1,7 @@
-﻿using Avalonia.Controls;
+﻿using System.Reflection;
+using Avalonia.Controls;
 using SOS_Game;
+using SOS_Game.Logic;
 
 namespace UnitTestProject;
 
@@ -62,7 +64,7 @@ public static class TestHelper
             isComputerRadioButton = window.FindControl<RadioButton>("RedComputerRadioButton");
         }
         else
-            throw new ArgumentException(
+            throw new ArgumentOutOfRangeException(
                 $"Argument player must be {PlayerType.BlueLeft} or {PlayerType.RedRight}! Given player is {playerType}");
         
         Assert.NotNull(isHumanRadioButton);
@@ -72,4 +74,26 @@ public static class TestHelper
         isHumanRadioButton.IsChecked = !isComputer;
         isComputerRadioButton.IsChecked = isComputer;
     }
+
+    public static void SetIsComputerGameBoard(PlayerType playerType, bool isComputer, GameBoard board)
+    {
+        PropertyInfo? playerInfo;
+
+        switch (playerType)
+        {
+            case PlayerType.BlueLeft:
+               playerInfo = typeof(GameBoard).GetProperty("Blue", BindingFlags.Public | BindingFlags.Instance);
+                break;
+            case PlayerType.RedRight:
+                playerInfo = typeof(GameBoard).GetProperty("Red", BindingFlags.Public | BindingFlags.Instance);
+                break;
+            case PlayerType.None:
+            default:
+                throw new ArgumentOutOfRangeException(nameof(playerType), playerType, "Player must be either Blue or Red!");
+        }
+        
+        Assert.NotNull(playerInfo);
+        playerInfo.SetValue(board, new Player(board.Blue.PlayerType, isComputer));
+    }
+    
 }
