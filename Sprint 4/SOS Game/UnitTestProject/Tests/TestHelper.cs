@@ -1,0 +1,46 @@
+﻿using Avalonia.Controls;
+using SOS_Game;
+
+namespace UnitTestProject;
+
+public static class TestHelper
+{
+    public static void SetGameMode(GameType gameType, MainWindow window)
+    {
+        // Set game mode selection
+        var simpleRadioButton = window.FindControl<RadioButton>("SimpleGameRadioButton");
+        Assert.NotNull(simpleRadioButton);
+        var generalRadioButton = window.FindControl<RadioButton>("GeneralGameRadioButton");
+        Assert.NotNull(generalRadioButton);
+
+        simpleRadioButton.IsChecked = GameType.Simple == gameType;
+        generalRadioButton.IsChecked = GameType.General == gameType;
+    }
+
+    public static void SetTileChoice(in PlayerType playerType, in TileType tileChoice, in MainWindow window)
+    {
+        RadioButton? sRadioButton;
+        RadioButton? oRadioButton;
+
+        if (playerType == PlayerType.BlueLeft)
+        {
+            sRadioButton = window.FindControl<RadioButton>("BlueSChoice");
+            oRadioButton = window.FindControl<RadioButton>("BlueOChoice");
+        }
+        else if (playerType == PlayerType.RedRight)
+        {
+            sRadioButton = window.FindControl<RadioButton>("RedSChoice");
+            oRadioButton = window.FindControl<RadioButton>("RedOChoice");
+        }
+        else
+            throw new ArgumentException(
+                $"Argument player must be {PlayerType.BlueLeft} or {PlayerType.RedRight}! Given player is {playerType}");
+        
+        Assert.NotNull(sRadioButton);
+        Assert.NotNull(oRadioButton);
+
+        // Set the value of the tile selection
+        oRadioButton.IsChecked = tileChoice == TileType.O;
+        sRadioButton.IsChecked = tileChoice == TileType.S;
+    }
+}

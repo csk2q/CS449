@@ -8,50 +8,16 @@ using Avalonia.Media;
 using SOS_Game;
 using SOS_Game.Logic;
 
+using static UnitTestProject.TestHelper;
+
 namespace UnitTestProject;
 
 public class Sprint3UnitTests
 {
     // Helper functions //
+    
+    // Moved to TestHelper.cs
 
-    void setGameMode(GameType gameType, MainWindow window)
-    {
-        // Set game mode selection
-        var simpleRadioButton = window.FindControl<RadioButton>("SimpleGameRadioButton");
-        Assert.NotNull(simpleRadioButton);
-        var generalRadioButton = window.FindControl<RadioButton>("GeneralGameRadioButton");
-        Assert.NotNull(generalRadioButton);
-
-        simpleRadioButton.IsChecked = GameType.Simple == gameType;
-        generalRadioButton.IsChecked = GameType.General == gameType;
-    }
-
-    void setTileChoice(in PlayerType playerType, in TileType tileChoice, in MainWindow window)
-    {
-        RadioButton? sRadioButton;
-        RadioButton? oRadioButton;
-
-        if (playerType == PlayerType.BlueLeft)
-        {
-            sRadioButton = window.FindControl<RadioButton>("BlueSChoice");
-            oRadioButton = window.FindControl<RadioButton>("BlueOChoice");
-        }
-        else if (playerType == PlayerType.RedRight)
-        {
-            sRadioButton = window.FindControl<RadioButton>("RedSChoice");
-            oRadioButton = window.FindControl<RadioButton>("RedOChoice");
-        }
-        else
-            throw new ArgumentException(
-                $"Argument player must be {PlayerType.BlueLeft} or {PlayerType.RedRight}! Given player is {playerType}");
-        
-        Assert.NotNull(sRadioButton);
-        Assert.NotNull(oRadioButton);
-
-        // Set the value of the tile selection
-        oRadioButton.IsChecked = tileChoice == TileType.O;
-        sRadioButton.IsChecked = tileChoice == TileType.S;
-    }
 
     // Unit Tests //
 
@@ -79,7 +45,7 @@ public class Sprint3UnitTests
         
         
         // Set game mode and start game
-        setGameMode(gameType, window);
+        SetGameMode(gameType, window);
         window.StartNewGame(null, new RoutedEventArgs());
 
         // Get initial state of BoardCanvas
@@ -88,7 +54,7 @@ public class Sprint3UnitTests
         Assert.Empty(boardCanvas.Children);
 
         // Set Red tile choice to O
-        setTileChoice(PlayerType.RedRight, TileType.O, window);
+        SetTileChoice(PlayerType.RedRight, TileType.O, window);
         
         // Make an SOS
         var gameBoardGrid = window.FindControl<UniformGrid>("GameBoardGrid");
@@ -130,11 +96,11 @@ public class Sprint3UnitTests
         window.Show();
         
         // Set game mode and start game
-        setGameMode(GameType.Simple, window);
+        SetGameMode(GameType.Simple, window);
         window.StartNewGame(null, new RoutedEventArgs());
 
         // Set Red tile choice to O
-        setTileChoice(PlayerType.RedRight, TileType.O, window);
+        SetTileChoice(PlayerType.RedRight, TileType.O, window);
         
         // Make an SOS
         var gameBoardGrid = window.FindControl<UniformGrid>("GameBoardGrid");
@@ -192,11 +158,11 @@ public class Sprint3UnitTests
         window.Show();
         
         // Set game mode and start game
-        setGameMode(GameType.General, window);
+        SetGameMode(GameType.General, window);
         window.StartNewGame(null, new RoutedEventArgs());
 
         // Set Red tile choice to O
-        setTileChoice(PlayerType.RedRight, TileType.O, window);
+        SetTileChoice(PlayerType.RedRight, TileType.O, window);
         
         // Make an SOS
         var gameBoardGrid = window.FindControl<UniformGrid>("GameBoardGrid");
@@ -260,7 +226,7 @@ public class Sprint3UnitTests
         window.Show();
         
         // Set game mode and start game
-        setGameMode(gameType, window);
+        SetGameMode(gameType, window);
         window.StartNewGame(null, new RoutedEventArgs());
         
         // Fill the board with S tiles
