@@ -1,7 +1,10 @@
+﻿using System.Reflection;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Headless.XUnit;
 using Avalonia.Interactivity;
 using SOS_Game;
+using SOS_Game.Logic;
 using static UnitTestProject.TestHelper;
 
 namespace UnitTestProject;
@@ -33,7 +36,7 @@ public class Sprint4UnitTests
         window.StartNewGame(null, new RoutedEventArgs());
 
         // Get the displayed game board
-        var gameBoardGrid = window.FindControl<Canvas>("GameBoardGrid");
+        var gameBoardGrid = window.FindControl<UniformGrid>("GameBoardGrid");
         Assert.NotNull(gameBoardGrid);
         Assert.NotEmpty(gameBoardGrid.Children);
 
@@ -45,7 +48,7 @@ public class Sprint4UnitTests
             if (control is Button button)
             {
                 var buttonContent = button.Content;
-                if (string.IsNullOrEmpty((string?)buttonContent))
+                if (!string.IsNullOrEmpty((string?)buttonContent))
                     nonEmptyTileCount++;
             }
         }
@@ -62,6 +65,49 @@ public class Sprint4UnitTests
      * And: A valid SOS can be completed
      * Then: The computer should place the tile needed to complete the SOS
      */
+    [AvaloniaTheory]
+    [InlineData(GameType.Simple)]
+    [InlineData(GameType.General)]
+    void ComputerMakeSosTest(GameType gameType)
+    {
+        // Set up the window
+        var window = new MainWindow();
+        window.Show();
+
+        // Set game properties
+        SetGameMode(gameType, window);
+        SetTileChoice(PlayerType.BlueLeft, TileType.S, window);
+        SetTileChoice(PlayerType.RedRight, TileType.O, window);
+
+        // Start the game
+        window.StartNewGame(null, new RoutedEventArgs());
+
+        // Get the displayed game board
+        var gameBoardGrid = window.FindControl<UniformGrid>("GameBoardGrid");
+        Assert.NotNull(gameBoardGrid);
+        Assert.NotEmpty(gameBoardGrid.Children);
+        
+        // Get the game board for this game
+        var gameBoardInfo =  typeof(MainWindow).GetField("gameBoard", BindingFlags.NonPublic | BindingFlags.Instance);
+        Assert.NotNull(gameBoardInfo);
+        var gameBoard = (GameBoard?)gameBoardInfo.GetValue(window);
+        Assert.NotNull(gameBoard);
+        
+        // Blue player place an S
+        gameBoardGrid.Children[0].RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        
+        // Set blue player to be a computer player
+        SetIsComputerGameBoard(PlayerType.BlueLeft, true, gameBoard);
+        
+        // Red player place an O
+        gameBoardGrid.Children[1].RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+ 
+        // Check that an SOS was made by the blue computer player
+        Assert.Equal(1, gameBoard.Blue.Score);
+    }
+
+
+
 
 
     /*
