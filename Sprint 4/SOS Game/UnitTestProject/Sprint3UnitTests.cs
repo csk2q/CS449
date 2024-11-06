@@ -104,7 +104,7 @@ public class Sprint3UnitTests
         Assert.NotNull(gameBoardFieldInfo);
         var gameBoard = (GameBoard?)gameBoardFieldInfo.GetValue(window);
         Assert.NotNull(gameBoard);
-        Assert.Equal(1, gameBoard.BlueScore);
+        Assert.Equal(1, gameBoard.Blue.Score);
         
         // Check that a line was added to BoardCanvas
         Assert.Single(boardCanvas.Children);
@@ -149,7 +149,7 @@ public class Sprint3UnitTests
         Assert.NotNull(gameBoardFieldInfo);
         var gameBoard = (GameBoard?)gameBoardFieldInfo.GetValue(window);
         Assert.NotNull(gameBoard);
-        Assert.Equal(1, gameBoard.RedScore);
+        Assert.Equal(1, gameBoard.Red.Score);
         
         // Verify game is over
         Assert.True(gameBoard.IsGameOver());
@@ -215,7 +215,7 @@ public class Sprint3UnitTests
         Assert.Equal(PlayerType.BlueLeft, gameBoard.GetWinner());
         
         // Check blue score to verify an SOS was made
-        Assert.Equal(3, gameBoard.BlueScore);
+        Assert.Equal(3, gameBoard.Blue.Score);
         
         // Test board lock
         var middleLeftButton = gameBoardGrid.Children[3] as Button;

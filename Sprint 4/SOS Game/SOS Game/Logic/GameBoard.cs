@@ -544,7 +544,7 @@ public abstract class GameBoard : IDisposable
          * When: The computer cannot make an SOS nor make a blocking move.
          * Then: The computer will make a random valid move.
          */
-        Debug.Assert(false, "We had to make a random move.");
+        // Debug.Assert(false, "We had to make a random move.");
         var randomTileIndex = random.Next(0, emptyTiles.Count);
         var randPos = emptyTiles[randomTileIndex];
         var randTile = getRandomTileType();
