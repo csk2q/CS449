@@ -44,7 +44,7 @@ public static class TestHelper
         sRadioButton.IsChecked = tileChoice == TileType.S;
     }
 
-    public static void SetIsComputer(PlayerType playerType, bool isComputer, MainWindow window)
+    public static void SetIsComputerRadioButtons(PlayerType playerType, bool isComputer, MainWindow window)
     {        
         // RadioButton? isHumanRadioButton;
         // RadioButton? isComputerRadioButton;
