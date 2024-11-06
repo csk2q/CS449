@@ -43,4 +43,33 @@ public static class TestHelper
         oRadioButton.IsChecked = tileChoice == TileType.O;
         sRadioButton.IsChecked = tileChoice == TileType.S;
     }
+
+    public static void SetIsComputer(PlayerType playerType, bool isComputer, MainWindow window)
+    {        
+        // RadioButton? isHumanRadioButton;
+        // RadioButton? isComputerRadioButton;
+        RadioButton? isHumanRadioButton;
+        RadioButton? isComputerRadioButton;
+
+        if (playerType == PlayerType.BlueLeft)
+        {
+            isHumanRadioButton = window.FindControl<RadioButton>("BlueHumanRadioButton");
+            isComputerRadioButton = window.FindControl<RadioButton>("BlueComputerRadioButton");
+        }
+        else if (playerType == PlayerType.RedRight)
+        {
+            isHumanRadioButton = window.FindControl<RadioButton>("RedHumanRadioButton");
+            isComputerRadioButton = window.FindControl<RadioButton>("RedComputerRadioButton");
+        }
+        else
+            throw new ArgumentException(
+                $"Argument player must be {PlayerType.BlueLeft} or {PlayerType.RedRight}! Given player is {playerType}");
+        
+        Assert.NotNull(isHumanRadioButton);
+        Assert.NotNull(isComputerRadioButton);
+
+        // Set the value of the radio button
+        isHumanRadioButton.IsChecked = !isComputer;
+        isComputerRadioButton.IsChecked = isComputer;
+    }
 }
