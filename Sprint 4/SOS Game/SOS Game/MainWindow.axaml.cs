@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
@@ -78,8 +79,8 @@ public partial class MainWindow : Window
     {
         if (gameBoard.IsGameOver())
         {
-            TurnDisplay.Opacity = 0;
-            WinnerDisplay.Opacity = 100;
+            TurnDisplay.IsVisible = false;
+            WinnerDisplay.IsVisible = true;
 
             switch (gameBoard.GetWinner())
             {
@@ -104,8 +105,8 @@ public partial class MainWindow : Window
         }
         else
         {
-            TurnDisplay.Opacity = 100;
-            WinnerDisplay.Opacity = 0;
+            TurnDisplay.IsVisible = true;
+            WinnerDisplay.IsVisible = false;
 
             if (gameBoard.curPlayerTurn == PlayerType.BlueLeft)
             {
@@ -164,9 +165,8 @@ public partial class MainWindow : Window
         bool result;
         switch (playerType)
         {
-            
             case PlayerType.BlueLeft:
-                result =  BlueComputerRadioButton.IsChecked.Value;
+                result = BlueComputerRadioButton.IsChecked.Value;
                 break;
             case PlayerType.RedRight:
                 result = RedComputerRadioButton.IsChecked.Value;
@@ -177,6 +177,7 @@ public partial class MainWindow : Window
                 throw new ArgumentOutOfRangeException(nameof(playerType), playerType,
                     "Player type must be either Blue or Red.");
         }
+
         return result;
     }
 
@@ -206,14 +207,8 @@ public partial class MainWindow : Window
     {
         var completedSosArray = turn.SosMade;
         var button = getTile(turn.Move.Position.row, turn.Move.Position.column);
-        
-        Debug.Assert(button is not null, "button is null?");            
 
-        // For every completed SOS
-        foreach (var sos in completedSosArray)
-        {
-            markSos(sos);
-        }
+        Debug.Assert(button is not null, "button is null?");
 
         // Tile was placed successfully
         // Color letter based on player turn
@@ -224,6 +219,17 @@ public partial class MainWindow : Window
 
         // Set tile letter
         button.Content = Enum.GetName(turn.Move.Tile);
+
+        button.InvalidateMeasure();
+        button.InvalidateArrange();
+        button.InvalidateVisual();
+
+        // For every completed SOS
+        foreach (var sos in completedSosArray)
+        {
+            markSos(sos);
+        }
+
 
         updateTurnText();
         updateScoreText();
@@ -262,7 +268,7 @@ public partial class MainWindow : Window
 
             // Try place tile
             bool result = gameBoard.PlaceTile(Grid.GetRow(button), Grid.GetColumn(button), tileSelection);
-            
+
             // TODO do I need to do anything _here_ after placing a tile? Or do I do everything in 
         }
         else
@@ -273,7 +279,7 @@ public partial class MainWindow : Window
     {
         // Get rid of old board
         gameBoard.Dispose();
-        
+
         // Get input
         var boardSize = currentBoardSize = getBoardSizeInput();
 
@@ -318,6 +324,9 @@ public partial class MainWindow : Window
         updateTurnText();
         updateScoreText();
 
+        // Show Avalonia bug warning if both players are computers
+        AvaloniaBugWarning.IsVisible = gameBoard.Blue.IsComputer && gameBoard.Red.IsComputer;
+
         gameBoard.StartGame();
     }
 
@@ -343,81 +352,86 @@ public partial class MainWindow : Window
 
         // The values in Bounds does not seem to give correct results.
         // Using Bounds.Center gave even more erroneous values.
-        // Manual calculation is necessary to receive relatively ok results.
+        // Control.TranslatePoint(new Point(0,0)) also gives erroneous values.
+        // The best results I have obtained from using PointToScreen() into PointToClient()
+
+        // I suspect at least part of the issue is that PointToScreen() and PointToClient() returns default if there is an error.
+        // This results in a silent failure and incorrect values beinng returned to my code.
+        // Source link https://github.com/AvaloniaUI/Avalonia/blob/9cecb90ba1e681d1783e3a89db4b8d860859550f/src/Avalonia.Native/TopLevelImpl.cs#L278
+        // Related issue: https://github.com/AvaloniaUI/Avalonia/issues/16622
+
 
         // Get the position of the top-left corner of the tile
-        Point startPoint = s1.TranslatePoint(new Point(-7.5, -2.5), BoardCanvas)!.Value;
-        Point centerPoint = o.TranslatePoint(new Point(0, 0), BoardCanvas)!.Value;
-        Point endPoint = s2.TranslatePoint(new Point(0, 0), BoardCanvas)!.Value;
+        var startPoint = s1.PointToScreen(new Point(0, 0));
+        var centerPoint = o.PointToScreen(new Point(0, 0));
+        var endPoint = s2.PointToScreen(new Point(0, 0));
 
-        // Debug rendering of top left of tile
+        // Debug render: Put squares in the top left of each tile in the SOS
         if (false)
         {
+            var size = 10;
+
             var circle = new Rectangle
             {
                 Fill = new SolidColorBrush(Colors.LawnGreen),
-                Width = 5,
-                Height = 5,
+                Width = size,
+                Height = size,
                 ZIndex = 999,
             };
-            Canvas.SetLeft(circle, startPoint.X);
-            Canvas.SetTop(circle, startPoint.Y);
+            var localPoint = BoardCanvas.PointToClient(startPoint);
+            Canvas.SetLeft(circle, localPoint.X);
+            Canvas.SetTop(circle, localPoint.Y);
             BoardCanvas.Children.Add(circle);
             circle = new Rectangle
             {
                 Fill = new SolidColorBrush(Colors.DeepPink),
-                Width = 5,
-                Height = 5,
+                Width = size,
+                Height = size,
                 ZIndex = 999,
             };
-            Canvas.SetLeft(circle, centerPoint.X);
-            Canvas.SetTop(circle, centerPoint.Y);
+            localPoint = BoardCanvas.PointToClient(centerPoint);
+            Canvas.SetLeft(circle, localPoint.X);
+            Canvas.SetTop(circle, localPoint.Y);
             BoardCanvas.Children.Add(circle);
             circle = new Rectangle
             {
                 Fill = new SolidColorBrush(Colors.OrangeRed),
-                Width = 5,
-                Height = 5,
+                Width = size,
+                Height = size,
                 ZIndex = 999,
             };
-            Canvas.SetLeft(circle, endPoint.X);
-            Canvas.SetTop(circle, endPoint.Y);
+            localPoint = BoardCanvas.PointToClient(endPoint);
+            Canvas.SetLeft(circle, localPoint.X);
+            Canvas.SetTop(circle, localPoint.Y);
             BoardCanvas.Children.Add(circle);
         }
 
-        // Subtract the boarders to get the real top left corner
-        startPoint = new(startPoint.X - s1.BorderThickness.Left, startPoint.Y - s1.BorderThickness.Top);
-        centerPoint = new(centerPoint.X - o.BorderThickness.Left, centerPoint.Y - o.BorderThickness.Top);
-        endPoint = new(endPoint.X - s2.BorderThickness.Left, endPoint.Y - s2.BorderThickness.Top);
+        // Calculate tile edge length
+        var firstTilePoint = GameBoardGrid.Children[0].PointToScreen(new Point(0, 0));
+        var secondTilePoint = GameBoardGrid.Children[1].PointToScreen(new Point(0, 0));
+        var edgeLength = Math.Abs(firstTilePoint.X - secondTilePoint.X);
 
+        // Move points to center of tile
+        PixelPoint offset = new PixelPoint(edgeLength / 2, edgeLength / 2);
+        startPoint += offset;
+        centerPoint += offset;
+        endPoint += offset;
 
-        // Calculate the width including the boarders
-        var s1Width = s1.Width + s1.BorderThickness.Left + s1.BorderThickness.Right;
-        var oWidth = o.Width + o.BorderThickness.Left + o.BorderThickness.Right;
-        var s2Width = s2.Width + s2.BorderThickness.Left + s2.BorderThickness.Right;
-
-        // Calculate the height including the boarders
-        var s1Height = s1.Height + s1.BorderThickness.Bottom + s1.BorderThickness.Top;
-        var oHeight = o.Height + o.BorderThickness.Bottom + o.BorderThickness.Top;
-        var s2Height = s2.Height + s2.BorderThickness.Bottom + s2.BorderThickness.Top;
-
-        // Calculate the center
-        startPoint = new Point(startPoint.X + s1Width / 2, startPoint.Y + s1Height / 2);
-        centerPoint = new Point(centerPoint.X + oWidth / 2, centerPoint.Y + oHeight / 2);
-        endPoint = new Point(endPoint.X + s2Width / 2, endPoint.Y + s2Height / 2);
-
-        // Scale up around center so lines don't start from center of the tiles
+        // Scale line up around center the SOS so lines don't start and end from the center of the S tiles
         // Desmos graph of the scaling math: https://www.desmos.com/calculator/aws7k4yil5
         var scalingFactor = 1.3;
-        startPoint = centerPoint + (scalingFactor * (startPoint - centerPoint));
-        endPoint = centerPoint + (scalingFactor * (endPoint - centerPoint));
-
+        var startPointDirection = startPoint - centerPoint;
+        startPoint = centerPoint + new PixelPoint((int)(startPointDirection.X * scalingFactor),
+            (int)(startPointDirection.Y * scalingFactor));
+        var endPointDirection = endPoint - centerPoint;
+        endPoint = centerPoint + new PixelPoint((int)(endPointDirection.X * scalingFactor),
+            (int)(endPointDirection.Y * scalingFactor));
 
         // Create line object
         var line = new Line
         {
-            StartPoint = startPoint,
-            EndPoint = endPoint,
+            StartPoint = BoardCanvas.PointToClient(startPoint),
+            EndPoint = BoardCanvas.PointToClient(endPoint),
             Stroke = gameBoard.curPlayerTurn == PlayerType.BlueLeft ? Brushes.DarkBlue : Brushes.DarkRed,
             StrokeThickness = 40 / (double)currentBoardSize,
         };

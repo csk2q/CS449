@@ -116,29 +116,37 @@
 
         </StackPanel>
 
-        <!-- Turn Display -->
-        <StackPanel Name="TurnDisplay" Grid.Row="2" Grid.Column="1"
+        <!-- Bottom Display -->
+        <StackPanel Grid.Row="2" Grid.Column="1"
                     VerticalAlignment="Center" HorizontalAlignment="Center"
-                    Orientation="Horizontal" Spacing="5">
+                    Spacing="0">
+            <!-- Turn Display -->
+            <StackPanel Name="TurnDisplay" Grid.Row="2" Grid.Column="1"
+                        VerticalAlignment="Center" HorizontalAlignment="Center"
+                        Orientation="Horizontal" Spacing="5">
 
-            <TextBlock FontSize="20" VerticalAlignment="Center">It is</TextBlock>
-            <TextBlock Name="TurnTextBlock" FontSize="20" VerticalAlignment="Center">???'s turn.</TextBlock>
+                <TextBlock FontSize="20" VerticalAlignment="Center">It is</TextBlock>
+                <TextBlock Name="TurnTextBlock" FontSize="20" VerticalAlignment="Center">???'s turn.</TextBlock>
 
-        </StackPanel>
+            </StackPanel>
 
-        <!-- Winner Display-->
-        <StackPanel Name="WinnerDisplay" Grid.Row="2" Grid.Column="1"
-                    Opacity="0" Background="DarkGreen"
-                    VerticalAlignment="Center" HorizontalAlignment="Center"
-                    Orientation="Horizontal" Spacing="5">
+            <!-- Winner Display-->
+            <StackPanel Name="WinnerDisplay" Grid.Row="2" Grid.Column="1"
+                        IsVisible="False" Background="DarkGreen"
+                        VerticalAlignment="Center" HorizontalAlignment="Center"
+                        Orientation="Horizontal" Spacing="5">
 
-            <TextBlock Name="WinnerText" FontSize="25" VerticalAlignment="Center" FontWeight="Bold">The winner is: </TextBlock>
-            <TextBlock Name="WinnerNameText" FontSize="25" VerticalAlignment="Center" FontWeight="Bold"
-                       FontStyle="Italic">
-                ???
-            </TextBlock>
-
-
+                <TextBlock Name="WinnerText" FontSize="25" VerticalAlignment="Center" FontWeight="Bold">The winner is: </TextBlock>
+                <TextBlock Name="WinnerNameText" FontSize="25" VerticalAlignment="Center" FontWeight="Bold"
+                           FontStyle="Italic">
+                    ???
+                </TextBlock>
+            </StackPanel>
+            
+            <!-- Line Mark Avalonia Bug -->
+            <TextBlock Name="AvaloniaBugWarning" IsVisible="False" TextWrapping="WrapWithOverflow" Foreground="Firebrick" Background="DarkKhaki" Padding="2"
+                       >Warning! Due to a bug in Avalonia (the UI library) SOSes may not be marked with a line or the line may render incorrectly when both players are set to computer. See code comments in the function MainWindow.markSos() for details.</TextBlock>
+            
         </StackPanel>
 
         <!-- New Game Button -->
