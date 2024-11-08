@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Threading;
 using SOS_Game.Logic;
+using Timer = System.Timers.Timer;
 
 namespace SOS_Game;
 
@@ -108,13 +109,13 @@ public partial class MainWindow : Window
             TurnDisplay.IsVisible = true;
             WinnerDisplay.IsVisible = false;
 
-            if (gameBoard.curPlayerTurn == PlayerType.BlueLeft)
+            if (gameBoard.CurPlayerTurn == PlayerType.BlueLeft)
             {
                 //BlueLeft's turn
                 TurnTextBlock.Text = "Blue's Turn";
                 TurnTextBlock.Foreground = Brushes.Blue;
             }
-            else if (gameBoard.curPlayerTurn == PlayerType.RedRight)
+            else if (gameBoard.CurPlayerTurn == PlayerType.RedRight)
             {
                 //RedRight's turn
                 TurnTextBlock.Text = "Red's Turn";
@@ -205,12 +206,25 @@ public partial class MainWindow : Window
 
     private void onBoardUpdateHandler(TurnResult turn)
     {
+        
+        // Create a timer to delay execution for a few frames.
+        // This to a workaround for a bug in Avalonia where attempting to obtain the bounds or location of an element
+        // immediately after changing its content will cause all requests to return the default value 0,0.
+        // See the note in markSos() for more details about the bug.
+        Timer timer = new Timer();
+        timer.Interval = 100; // in milliseconds of time
+        timer.Elapsed += (sender, args) => Dispatcher.UIThread.Post(() =>
+        {
+            try
+            {
+                // Stop ticking during execution to prevent a second call
+                timer.Stop();
+                
         var completedSosArray = turn.SosMade;
         var button = getTile(turn.Move.Position.row, turn.Move.Position.column);
 
         Debug.Assert(button is not null, "button is null?");
 
-        // Tile was placed successfully
         // Color letter based on player turn
         if (turn.placingPlayer == PlayerType.BlueLeft)
             button.Foreground = Brushes.Blue;
@@ -220,19 +234,24 @@ public partial class MainWindow : Window
         // Set tile letter
         button.Content = Enum.GetName(turn.Move.Tile);
 
-        button.InvalidateMeasure();
-        button.InvalidateArrange();
-        button.InvalidateVisual();
-
         // For every completed SOS
         foreach (var sos in completedSosArray)
-        {
             markSos(sos);
-        }
-
 
         updateTurnText();
         updateScoreText();
+    }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
+            finally
+            {
+                timer.Dispose();
+            }
+        });
+
+        timer.Start();
     }
 
 
