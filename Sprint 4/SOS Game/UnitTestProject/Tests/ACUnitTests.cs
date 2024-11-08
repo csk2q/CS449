@@ -103,7 +103,7 @@ public class ACUnitTests
             Assert.Equal(Enum.GetName(tileSelection), emptyTile.Content);
 
             // Assert that the player's turn has switched
-            Assert.NotEqual(playerType, gameBoard.curPlayerTurn);
+            Assert.NotEqual(playerType, gameBoard.CurPlayerTurn);
         }
     }
 
@@ -212,7 +212,7 @@ public class ACUnitTests
             Assert.Equal(Enum.GetName(tileSelection), emptyTile.Content);
 
             // Assert that the player's turn has switched
-            Assert.NotEqual(playerType, gameBoard.curPlayerTurn);
+            Assert.NotEqual(playerType, gameBoard.CurPlayerTurn);
 
             // Trigger click to try to place on that tile again
             emptyTile.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));

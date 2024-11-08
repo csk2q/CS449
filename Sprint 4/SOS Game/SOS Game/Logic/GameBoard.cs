@@ -25,7 +25,7 @@ public abstract class GameBoard : IDisposable
 
     // Blue goes first
     // TODO allow setting who plays first?
-    public PlayerType curPlayerTurn { get; private set; } = PlayerType.BlueLeft;
+    public PlayerType CurPlayerTurn { get; private set; } = PlayerType.BlueLeft;
     public Player Blue { get; init; }
     public Player Red { get; init; }
 
@@ -62,7 +62,7 @@ public abstract class GameBoard : IDisposable
     {
         board = other.board.Select(a => (TileType[])a.Clone()).ToArray();
         size = other.size;
-        curPlayerTurn = other.curPlayerTurn;
+        CurPlayerTurn = other.CurPlayerTurn;
         Blue = new Player(other.Blue);
         Red = new Player(other.Red);
         random = other.random;
@@ -153,21 +153,11 @@ public abstract class GameBoard : IDisposable
 
     public bool IsCurrentPlayerComputer()
     {
-        if (curPlayerTurn == PlayerType.BlueLeft)
+        if (CurPlayerTurn == PlayerType.BlueLeft)
             return Blue.IsComputer;
-        if (curPlayerTurn == PlayerType.RedRight)
+        if (CurPlayerTurn == PlayerType.RedRight)
             return Red.IsComputer;
         return false;
-    }
-
-    /*
-     * TODO implement GetBoardState()
-     * Should it call
-     * It will return a yeld-able result?
-     */
-    public TileType[][] GetBoardState()
-    {
-        return board;
     }
 
     private TileType getRandomTileType()
@@ -213,7 +203,7 @@ public abstract class GameBoard : IDisposable
     {
         if (IsGameStarted)
         {
-            var placingPlayerTurn = curPlayerTurn;
+            var placingPlayerTurn = CurPlayerTurn;
             
             var didPlace = placeTile(row, column, tileType, out Sos[] completedSosArray);
             if (didPlace)
@@ -244,9 +234,8 @@ public abstract class GameBoard : IDisposable
             board[row][column] = tileType;
 
             // Update game record
-            turnRecord.Add(new Turn(curPlayerTurn, new Position(row, column), tileType));
+            turnRecord.Add(new Turn(CurPlayerTurn, new Position(row, column), tileType));
 
-            //TODO check for SOS
             completedSosArray = checkSos(row, column);
             foreach (var (s1, o, s2) in completedSosArray)
                 Console.WriteLine($"SOS created for {tileType} at ({s1}, {o}, {s2})");
@@ -256,7 +245,7 @@ public abstract class GameBoard : IDisposable
             if (completedSosArray.Length > 0)
             {
                 // Add score
-                switch (curPlayerTurn)
+                switch (CurPlayerTurn)
                 {
                     case PlayerType.BlueLeft:
                         Blue.Score += completedSosArray.Length;
@@ -265,17 +254,17 @@ public abstract class GameBoard : IDisposable
                         Red.Score += completedSosArray.Length;
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException("Unknown player turn: " + curPlayerTurn);
+                        throw new ArgumentOutOfRangeException("Unknown player turn: " + CurPlayerTurn);
                 }
             }
             else // No SOSes were made
             {
                 // Change turn
-                curPlayerTurn = curPlayerTurn switch
+                CurPlayerTurn = CurPlayerTurn switch
                 {
                     PlayerType.BlueLeft => PlayerType.RedRight,
                     PlayerType.RedRight => PlayerType.BlueLeft,
-                    _ => throw new ArgumentOutOfRangeException("Unknown player turn: " + curPlayerTurn)
+                    _ => throw new ArgumentOutOfRangeException("Unknown player turn: " + CurPlayerTurn)
                 };
             }
 
@@ -429,7 +418,7 @@ public abstract class GameBoard : IDisposable
 
     private TurnResult makeComputerMove()
     {
-        var placingPlayerTurn = curPlayerTurn;
+        var placingPlayerTurn = CurPlayerTurn;
         
         // Read AC 8 for the logic to implement
         /*

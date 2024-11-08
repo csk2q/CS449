@@ -21,7 +21,7 @@ public partial class MainWindow : Window
     private int currentBoardSize;
     private GameBoard gameBoard = new SimpleGame(0, false, false);
 
-
+    
     // Constructor //
     public MainWindow()
     {
@@ -203,7 +203,7 @@ public partial class MainWindow : Window
             }
         }
     }
-
+    
     private void onBoardUpdateHandler(TurnResult turn)
     {
         
@@ -220,27 +220,27 @@ public partial class MainWindow : Window
                 // Stop ticking during execution to prevent a second call
                 timer.Stop();
                 
-        var completedSosArray = turn.SosMade;
-        var button = getTile(turn.Move.Position.row, turn.Move.Position.column);
+                var completedSosArray = turn.SosMade;
+                var button = getTile(turn.Move.Position.row, turn.Move.Position.column);
 
-        Debug.Assert(button is not null, "button is null?");
+                Debug.Assert(button is not null, "button is null?");
 
-        // Color letter based on player turn
-        if (turn.placingPlayer == PlayerType.BlueLeft)
-            button.Foreground = Brushes.Blue;
-        else
-            button.Foreground = Brushes.Red;
+                // Color letter based on player turn
+                if (turn.placingPlayer == PlayerType.BlueLeft)
+                    button.Foreground = Brushes.Blue;
+                else
+                    button.Foreground = Brushes.Red;
 
-        // Set tile letter
-        button.Content = Enum.GetName(turn.Move.Tile);
+                // Set tile letter
+                button.Content = Enum.GetName(turn.Move.Tile);
 
-        // For every completed SOS
-        foreach (var sos in completedSosArray)
-            markSos(sos);
+                // For every completed SOS
+                foreach (var sos in completedSosArray)
+                    markSos(sos);
 
-        updateTurnText();
-        updateScoreText();
-    }
+                updateTurnText();
+                updateScoreText();
+            }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex);
@@ -263,7 +263,7 @@ public partial class MainWindow : Window
         {
             // Variables
             TileType tileSelection;
-            var placingPlayer = gameBoard.curPlayerTurn;
+            var placingPlayer = gameBoard.CurPlayerTurn;
 
             // Get player choices
             if (placingPlayer == PlayerType.BlueLeft)
@@ -287,8 +287,6 @@ public partial class MainWindow : Window
 
             // Try place tile
             bool result = gameBoard.PlaceTile(Grid.GetRow(button), Grid.GetColumn(button), tileSelection);
-
-            // TODO do I need to do anything _here_ after placing a tile? Or do I do everything in 
         }
         else
             Debug.Assert(false, "ClickTile called but sender is not a button! Sender: " + sender);
@@ -451,7 +449,7 @@ public partial class MainWindow : Window
         {
             StartPoint = BoardCanvas.PointToClient(startPoint),
             EndPoint = BoardCanvas.PointToClient(endPoint),
-            Stroke = gameBoard.curPlayerTurn == PlayerType.BlueLeft ? Brushes.DarkBlue : Brushes.DarkRed,
+            Stroke = gameBoard.CurPlayerTurn == PlayerType.BlueLeft ? Brushes.DarkBlue : Brushes.DarkRed,
             StrokeThickness = 40 / (double)currentBoardSize,
         };
 
