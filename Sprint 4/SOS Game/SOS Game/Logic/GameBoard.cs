@@ -496,32 +496,45 @@ public abstract class GameBoard : IDisposable
         // If we reach moves that give the other player a score we can move on.
         // For the second ply of moves we want a min-heap since this our opponents score.
         // (Priority queue is a min-heap by default.)
-        var ply2Moves = new PriorityQueue<(Move ply1, Move ply2), int>();
+        List<Move> zeroSumMoves = [];
         while (moves.TryDequeue(out bestMove, out sosCount) && sosCount == 0)
         {
             var nextState = CloneGameBoard(this);
-            nextState.placeTile(bestMove.Position.row, bestMove.Position.column, bestMove.Tile, out var sosArray);
+            nextState.placeTile(bestMove.Position.row, bestMove.Position.column, bestMove.Tile, out _);
+
+            bool invalidateMove = false;
 
             // Get empty tiles in next state
             // And search for blocking moves (moves that won't score a point for the other player)
-
             foreach (Position emptyTile in nextState.getEmptyTiles())
             {
-                // Save result to  PriorityQueue<Move, int> moves based on number of SOSes made
-                ply2Moves.Enqueue((bestMove, new Move(TileType.S, emptyTile)),
-                    checkSos(emptyTile.row, emptyTile.column, TileType.S).Length);
-                ply2Moves.Enqueue((bestMove, new Move(TileType.O, emptyTile)),
-                    checkSos(emptyTile.row, emptyTile.column, TileType.O).Length);
+                var opponentSosCount = nextState.checkSos(emptyTile.row, emptyTile.column, TileType.S).Length;
+                if (opponentSosCount > 0)
+                {
+                    invalidateMove = true;
+                    break;
+                }
+                
+                opponentSosCount = nextState.checkSos(emptyTile.row, emptyTile.column, TileType.O).Length;
+                if (opponentSosCount > 0)
+                {
+                    invalidateMove = true;
+                    break;
+                }
             }
+
+            // Save move only if opponent cannot make an SOS for this move
+            if (!invalidateMove)
+                zeroSumMoves.Add(bestMove);                
         }
 
-        // TODO check that this is working correctly and make a test case.
-        if (ply2Moves.Count > 0)
+        // Randomly pick a move from equivalent zero sum moves
+        if (zeroSumMoves.Count > 0)
         {
-            bestMove = ply2Moves.Dequeue().ply1;
+            bestMove = zeroSumMoves[random.Next(zeroSumMoves.Count)];
             var placeTileResult = placeTile(bestMove.Position.row, bestMove.Position.column, bestMove.Tile,
                 out Sos[] resultSosArray);
-            if(placeTileResult)
+            if (placeTileResult)
                 return new TurnResult(bestMove, resultSosArray, placingPlayerTurn);
             Debug.Assert(placeTileResult, "Failed to place tile?");
         }
@@ -533,7 +546,7 @@ public abstract class GameBoard : IDisposable
          * When: The computer cannot make an SOS nor make a blocking move.
          * Then: The computer will make a random valid move.
          */
-        // Debug.Assert(false, "We had to make a random move.");
+        Debug.WriteLine("Had to make a random move.");
         var randomTileIndex = random.Next(0, emptyTiles.Count);
         var randPos = emptyTiles[randomTileIndex];
         var randTile = getRandomTileType();
