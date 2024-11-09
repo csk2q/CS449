@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Headless.XUnit;
@@ -112,16 +112,16 @@ public class Sprint4UnitTests
 
 
     /*
-     * AC 8.3 Computer makes a blocking move
+     * AC 8.3 Computer avoids giving opponent SOS opportunities 
      * Given: An ongoing game
      * When: It is the computer’s turn
      * And: There are no SOSes to complete
-     * Then: The computer should attempt to make a “blocking” move so that the human cannot score a point next turn if possible.
+     * Then: The computer should avoid moves that allow its opponent to score a point on their next turn.
      */
 
 
     /*
-     * AC 8.4 Computer makes a random Move
+     * AC 8.4 Computer makes a random move
      * Given: And ongoing game
      * When: The computer cannot make an SOS nor make a blocking move.
      * Then: The computer will make a random valid move.
