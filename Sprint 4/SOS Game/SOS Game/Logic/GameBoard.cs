@@ -44,7 +44,7 @@ public abstract class GameBoard : IDisposable
 
 
     // Constructor //
-    public GameBoard(int size, bool isBlueComputer, bool isRedComputer)
+    protected GameBoard(int size, bool isBlueComputer, bool isRedComputer)
     {
         //Set variables
         this.size = (int)Math.Clamp(size, MinBoardSize, MaxBoardSize);
