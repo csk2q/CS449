@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Headless.XUnit;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using SOS_Game;
 using SOS_Game.Logic;
 
@@ -57,7 +58,7 @@ public class ACUnitTests
             // Set player turn
             var gameBoardFieldInfo =
                 typeof(MainWindow).GetField("gameBoard", BindingFlags.NonPublic | BindingFlags.Instance);
-            var playerTurnProperty = typeof(GameBoard).GetProperty("curPlayerTurn",
+            var playerTurnProperty = typeof(GameBoard).GetProperty("CurPlayerTurn",
                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             Assert.NotNull(gameBoardFieldInfo);
             Assert.NotNull(playerTurnProperty);
@@ -98,6 +99,9 @@ public class ACUnitTests
 
             // Trigger click
             emptyTile.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            
+            // Wait for UI to update
+            Dispatcher.UIThread.RunJobs();
 
             // Assert that the tile content is now the tileSelection
             Assert.Equal(Enum.GetName(tileSelection), emptyTile.Content);
@@ -147,7 +151,7 @@ public class ACUnitTests
             // Set player turn
             var gameBoardFieldInfo =
                 typeof(MainWindow).GetField("gameBoard", BindingFlags.NonPublic | BindingFlags.Instance);
-            var playerTurnProperty = typeof(GameBoard).GetProperty("curPlayerTurn",
+            var playerTurnProperty = typeof(GameBoard).GetProperty("CurPlayerTurn",
                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             Assert.NotNull(gameBoardFieldInfo);
             Assert.NotNull(playerTurnProperty);
@@ -207,6 +211,9 @@ public class ACUnitTests
 
             // Trigger click
             emptyTile.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            
+            // Wait for UI to update
+            Dispatcher.UIThread.RunJobs();
 
             // Assert that the tile content is now the tileSelection
             Assert.Equal(Enum.GetName(tileSelection), emptyTile.Content);
@@ -413,7 +420,7 @@ public class ACUnitTests
         Assert.NotNull(currentBoardSize);
 
         // Access the GameBoard size field using reflection
-        var sizeField = gameBoard.GetType().GetField("size", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        var sizeField = typeof(GameBoard).GetField("size", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
         Assert.NotNull(sizeField);
         var gameBoardSize = (int?)sizeField.GetValue(gameBoard); // Cast size to int
         Assert.NotNull(sizeField);
@@ -507,7 +514,7 @@ public class ACUnitTests
         // Get player turn variable
         var gameBoardFieldInfo =
             typeof(MainWindow).GetField("gameBoard", BindingFlags.NonPublic | BindingFlags.Instance);
-        var playerTurnProperty = typeof(GameBoard).GetProperty("curPlayerTurn",
+        var playerTurnProperty = typeof(GameBoard).GetProperty("CurPlayerTurn",
             BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         Assert.NotNull(gameBoardFieldInfo);
         Assert.NotNull(playerTurnProperty);

@@ -21,7 +21,7 @@ public partial class MainWindow : Window
     private int currentBoardSize;
     private GameBoard gameBoard = new SimpleGame(0, false, false);
 
-    
+
     // Constructor //
     public MainWindow()
     {
@@ -203,55 +203,35 @@ public partial class MainWindow : Window
             }
         }
     }
-    
+
     private void onBoardUpdateHandler(TurnResult turn)
     {
-        
-        // Create a timer to delay execution for a few frames.
         // This to a workaround for a bug in Avalonia where attempting to obtain the bounds or location of an element
         // immediately after changing its content will cause all requests to return the default value 0,0.
         // See the note in markSos() for more details about the bug.
-        Timer timer = new Timer();
-        timer.Interval = 100; // in milliseconds of time
-        timer.Elapsed += (sender, args) => Dispatcher.UIThread.Post(() =>
-        {
-            try
-            {
-                // Stop ticking during execution to prevent a second call
-                timer.Stop();
-                
-                var completedSosArray = turn.SosMade;
-                var button = getTile(turn.Move.Position.row, turn.Move.Position.column);
+        // Wait for UI to update
+        Dispatcher.UIThread.RunJobs();
 
-                Debug.Assert(button is not null, "button is null?");
+        var completedSosArray = turn.SosMade;
+        var button = getTile(turn.Move.Position.row, turn.Move.Position.column);
 
-                // Color letter based on player turn
-                if (turn.placingPlayer == PlayerType.BlueLeft)
-                    button.Foreground = Brushes.Blue;
-                else
-                    button.Foreground = Brushes.Red;
+        Debug.Assert(button is not null, "button is null?");
 
-                // Set tile letter
-                button.Content = Enum.GetName(turn.Move.Tile);
+        // Color letter based on player turn
+        if (turn.placingPlayer == PlayerType.BlueLeft)
+            button.Foreground = Brushes.Blue;
+        else
+            button.Foreground = Brushes.Red;
 
-                // For every completed SOS
-                foreach (var sos in completedSosArray)
-                    markSos(sos);
+        // Set tile letter
+        button.Content = Enum.GetName(turn.Move.Tile);
 
-                updateTurnText();
-                updateScoreText();
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex);
-            }
-            finally
-            {
-                timer.Dispose();
-            }
-        });
+        // For every completed SOS
+        foreach (var sos in completedSosArray)
+            markSos(sos);
 
-        timer.Start();
+        updateTurnText();
+        updateScoreText();
     }
 
 

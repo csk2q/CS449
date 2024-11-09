@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Headless.XUnit;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using SOS_Game;
 using SOS_Game.Logic;
 using static UnitTestProject.TestHelper;
@@ -39,6 +40,9 @@ public class Sprint4UnitTests
         var gameBoardGrid = window.FindControl<UniformGrid>("GameBoardGrid");
         Assert.NotNull(gameBoardGrid);
         Assert.NotEmpty(gameBoardGrid.Children);
+        
+        // Wait for UI to update
+        Dispatcher.UIThread.RunJobs();
 
 
         // Count number of tiles with a letter
@@ -105,9 +109,6 @@ public class Sprint4UnitTests
         // Check that an SOS was made by the blue computer player
         Assert.Equal(1, gameBoard.Blue.Score);
     }
-
-
-
 
 
     /*
