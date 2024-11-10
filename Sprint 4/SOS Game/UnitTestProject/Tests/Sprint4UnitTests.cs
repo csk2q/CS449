@@ -118,6 +118,42 @@ public class Sprint4UnitTests
      * And: There are no SOSes to complete
      * Then: The computer should avoid moves that allow its opponent to score a point on their next turn.
      */
+    // Make a human placement of an O in the center of a 3x3 and check if any other tiles have an S in them
+    [AvaloniaTheory]
+    [InlineData(GameType.Simple)]
+    [InlineData(GameType.General)]
+    void AvoidComputerGivingSoses(GameType gameType)
+    {
+        // Set up the window
+        var window = new MainWindow();
+        window.Show();
+
+        // Set up the game
+        SetGameMode(gameType, window);
+        SetIsComputerRadioButtons(PlayerType.RedRight, true, window);
+        SetTileChoice(PlayerType.BlueLeft, TileType.O, window);
+        window.StartNewGame(null, new RoutedEventArgs());
+
+        // Place O on center tile by blue human
+        var gameBoardGrid = window.FindControl<UniformGrid>("GameBoardGrid");
+        Assert.NotNull(gameBoardGrid);
+        int centerTileIndex = 5;
+        var centerTile = gameBoardGrid.Children[centerTileIndex] as Button;
+        Assert.NotNull(centerTile);
+        centerTile.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+
+
+        // Verify that the computer player did not place an S 
+        for (int i = 0; i < gameBoardGrid.Children.Count; i++)
+        {
+            if (i != centerTileIndex)
+            {
+                var buttonContent = (string?)((Button)gameBoardGrid.Children[i]).Content;
+                if (!string.IsNullOrEmpty(buttonContent))
+                    Assert.NotEqual("S", buttonContent);
+            }
+        }
+    }
 
 
     /*
