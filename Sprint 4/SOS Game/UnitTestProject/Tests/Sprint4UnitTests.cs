@@ -128,29 +128,33 @@ public class Sprint4UnitTests
         var window = new MainWindow();
         window.Show();
 
-        // Set up the game
-        SetGameMode(gameType, window);
-        SetIsComputerRadioButtons(PlayerType.RedRight, true, window);
-        SetTileChoice(PlayerType.BlueLeft, TileType.O, window);
-        window.StartNewGame(null, new RoutedEventArgs());
-
-        // Place O on center tile by blue human
-        var gameBoardGrid = window.FindControl<UniformGrid>("GameBoardGrid");
-        Assert.NotNull(gameBoardGrid);
-        int centerTileIndex = 5;
-        var centerTile = gameBoardGrid.Children[centerTileIndex] as Button;
-        Assert.NotNull(centerTile);
-        centerTile.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-
-
-        // Verify that the computer player did not place an S 
-        for (int i = 0; i < gameBoardGrid.Children.Count; i++)
+        // Run multiple times to account for randomness
+        for (int runIndex = 100; runIndex >= 0; runIndex--)
         {
-            if (i != centerTileIndex)
+            // Set up the game
+            SetGameMode(gameType, window);
+            SetIsComputerRadioButtons(PlayerType.RedRight, true, window);
+            SetTileChoice(PlayerType.BlueLeft, TileType.O, window);
+            window.StartNewGame(null, new RoutedEventArgs());
+
+            // Place O on center tile by blue human
+            var gameBoardGrid = window.FindControl<UniformGrid>("GameBoardGrid");
+            Assert.NotNull(gameBoardGrid);
+            int centerTileIndex = 4;
+            var centerTile = gameBoardGrid.Children[centerTileIndex] as Button;
+            Assert.NotNull(centerTile);
+            centerTile.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+
+
+            // Verify that the computer player did not place an S 
+            for (int i = 0; i < gameBoardGrid.Children.Count; i++)
             {
-                var buttonContent = (string?)((Button)gameBoardGrid.Children[i]).Content;
-                if (!string.IsNullOrEmpty(buttonContent))
-                    Assert.NotEqual("S", buttonContent);
+                if (i != centerTileIndex)
+                {
+                    var buttonContent = (string?)((Button)gameBoardGrid.Children[i]).Content;
+                    if (!string.IsNullOrEmpty(buttonContent))
+                        Assert.NotEqual("S", buttonContent);
+                }
             }
         }
     }
@@ -177,17 +181,17 @@ public class Sprint4UnitTests
         SetGameMode(gameType, window);
         SetBoardSize(4, window);
         window.StartNewGame(null, new RoutedEventArgs());
-        
+
         // Get the gameBoard
         var gameBoardInfo = typeof(MainWindow).GetField("gameBoard", BindingFlags.NonPublic | BindingFlags.Instance);
         Assert.NotNull(gameBoardInfo);
         var gameBoard = (GameBoard?)gameBoardInfo.GetValue(window);
         Assert.NotNull(gameBoard);
-        
+
         // Get the GameBoardGrid
         var gameBoardGrid = window.FindControl<UniformGrid>("GameBoardGrid");
         Assert.NotNull(gameBoardGrid);
-        
+
         // Get the getTile method
         var getTileInfo = typeof(MainWindow).GetMethod("getTile", BindingFlags.NonPublic | BindingFlags.Instance);
         Assert.NotNull(getTileInfo);
@@ -209,7 +213,7 @@ public class Sprint4UnitTests
             new GameBoard.Turn(PlayerType.BlueLeft, new Position(3, 2), TileType.O),
         ];
         var finalTurn = new GameBoard.Turn(PlayerType.RedRight, new Position(2, 3), TileType.S);
-        
+
         // Place tiles
         foreach (var turn in turns)
         {
@@ -218,13 +222,13 @@ public class Sprint4UnitTests
             Assert.NotNull(curButton);
             curButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         }
-        
+
         SetIsComputerGameBoard(PlayerType.BlueLeft, true, gameBoard);
         SetIsComputerGameBoard(PlayerType.RedRight, true, gameBoard);
-        
+
         Assert.Equal(0, gameBoard.Blue.Score);
         Assert.Equal(0, gameBoard.Red.Score);
-        
+
         // Place final tile as Red to force a random move by the Blue computer
         SetTileChoice(finalTurn.Player, finalTurn.TileType, window);
         var button = (Button?)getTileInfo.Invoke(window, [finalTurn.Position.row, finalTurn.Position.column]);
