@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Headless.XUnit;
@@ -112,7 +112,7 @@ public class Sprint4UnitTests
 
 
     /*
-     * AC 8.3 Computer avoids giving opponent SOS opportunities 
+     * AC 8.3 Computer avoids giving opponent SOS opportunities
      * Given: An ongoing game
      * When: It is the computer’s turn
      * And: There are no SOSes to complete
@@ -162,4 +162,77 @@ public class Sprint4UnitTests
      * When: The computer cannot make an SOS nor make a blocking move.
      * Then: The computer will make a random valid move.
      */
+    // Note: A random move only happens when all moves allow the opponent to create an SOS 
+    //      This can only happen on boards with a size greater than three.
+    [AvaloniaTheory]
+    [InlineData(GameType.Simple)]
+    [InlineData(GameType.General)]
+    void ComputerRandomMove(GameType gameType)
+    {
+        // Set up the window
+        var window = new MainWindow();
+        window.Show();
+
+        // Set up the game
+        SetGameMode(gameType, window);
+        SetBoardSize(4, window);
+        window.StartNewGame(null, new RoutedEventArgs());
+        
+        // Get the gameBoard
+        var gameBoardInfo = typeof(MainWindow).GetField("gameBoard", BindingFlags.NonPublic | BindingFlags.Instance);
+        Assert.NotNull(gameBoardInfo);
+        var gameBoard = (GameBoard?)gameBoardInfo.GetValue(window);
+        Assert.NotNull(gameBoard);
+        
+        // Get the GameBoardGrid
+        var gameBoardGrid = window.FindControl<UniformGrid>("GameBoardGrid");
+        Assert.NotNull(gameBoardGrid);
+        
+        // Get the getTile method
+        var getTileInfo = typeof(MainWindow).GetMethod("getTile", BindingFlags.NonPublic | BindingFlags.Instance);
+        Assert.NotNull(getTileInfo);
+
+        GameBoard.Turn[] turns =
+        [
+            new GameBoard.Turn(PlayerType.BlueLeft, new Position(0, 2), TileType.O),
+            new GameBoard.Turn(PlayerType.RedRight, new Position(3, 3), TileType.S),
+            new GameBoard.Turn(PlayerType.BlueLeft, new Position(0, 0), TileType.S),
+            new GameBoard.Turn(PlayerType.RedRight, new Position(2, 1), TileType.O),
+            new GameBoard.Turn(PlayerType.BlueLeft, new Position(3, 0), TileType.O),
+            new GameBoard.Turn(PlayerType.RedRight, new Position(2, 0), TileType.O),
+            new GameBoard.Turn(PlayerType.BlueLeft, new Position(0, 3), TileType.O),
+            new GameBoard.Turn(PlayerType.RedRight, new Position(1, 0), TileType.O),
+            new GameBoard.Turn(PlayerType.BlueLeft, new Position(1, 2), TileType.S),
+            new GameBoard.Turn(PlayerType.RedRight, new Position(1, 3), TileType.O),
+            new GameBoard.Turn(PlayerType.BlueLeft, new Position(3, 1), TileType.O),
+            new GameBoard.Turn(PlayerType.RedRight, new Position(0, 1), TileType.S),
+            new GameBoard.Turn(PlayerType.BlueLeft, new Position(3, 2), TileType.O),
+        ];
+        var finalTurn = new GameBoard.Turn(PlayerType.RedRight, new Position(2, 3), TileType.S);
+        
+        // Place tiles
+        foreach (var turn in turns)
+        {
+            SetTileChoice(turn.Player, turn.TileType, window);
+            var curButton = (Button?)getTileInfo.Invoke(window, [turn.Position.row, turn.Position.column]);
+            Assert.NotNull(curButton);
+            curButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        }
+        
+        SetIsComputerGameBoard(PlayerType.BlueLeft, true, gameBoard);
+        SetIsComputerGameBoard(PlayerType.RedRight, true, gameBoard);
+        
+        Assert.Equal(0, gameBoard.Blue.Score);
+        Assert.Equal(0, gameBoard.Red.Score);
+        
+        // Place final tile as Red to force a random move by the Blue computer
+        SetTileChoice(finalTurn.Player, finalTurn.TileType, window);
+        var button = (Button?)getTileInfo.Invoke(window, [finalTurn.Position.row, finalTurn.Position.column]);
+        Assert.NotNull(button);
+        button.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+
+        Assert.Equal(0, gameBoard.Blue.Score);
+        Assert.Equal(1, gameBoard.Red.Score);
+        Assert.Equal(PlayerType.RedRight, gameBoard.GetWinner());
+    }
 }
