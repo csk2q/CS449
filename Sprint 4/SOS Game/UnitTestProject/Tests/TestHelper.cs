@@ -7,7 +7,14 @@ namespace UnitTestProject;
 
 public static class TestHelper
 {
-    public static void SetGameMode(GameType gameType, MainWindow window)
+    public static void SetBoardSize(decimal size, in MainWindow window)
+    {
+        var numericUpDown = window.GetControl<NumericUpDown>("BoardSizeNumericUpDown");
+        Assert.NotNull(numericUpDown);
+        numericUpDown.Value = size;
+    }
+    
+    public static void SetGameMode(GameType gameType, in MainWindow window)
     {
         // Set game mode selection
         var simpleRadioButton = window.FindControl<RadioButton>("SimpleGameRadioButton");
@@ -46,7 +53,7 @@ public static class TestHelper
         sRadioButton.IsChecked = tileChoice == TileType.S;
     }
 
-    public static void SetIsComputerRadioButtons(PlayerType playerType, bool isComputer, MainWindow window)
+    public static void SetIsComputerRadioButtons(PlayerType playerType, bool isComputer, in MainWindow window)
     {        
         // RadioButton? isHumanRadioButton;
         // RadioButton? isComputerRadioButton;
