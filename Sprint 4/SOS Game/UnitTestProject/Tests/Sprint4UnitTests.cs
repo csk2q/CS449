@@ -40,7 +40,7 @@ public class Sprint4UnitTests
         var gameBoardGrid = window.FindControl<UniformGrid>("GameBoardGrid");
         Assert.NotNull(gameBoardGrid);
         Assert.NotEmpty(gameBoardGrid.Children);
-        
+
         // Wait for UI to update
         Dispatcher.UIThread.RunJobs();
 
@@ -56,7 +56,7 @@ public class Sprint4UnitTests
                     nonEmptyTileCount++;
             }
         }
-        
+
         // Verify that there is a single tile placed on the board
         Assert.Equal(1, nonEmptyTileCount);
     }
@@ -90,22 +90,22 @@ public class Sprint4UnitTests
         var gameBoardGrid = window.FindControl<UniformGrid>("GameBoardGrid");
         Assert.NotNull(gameBoardGrid);
         Assert.NotEmpty(gameBoardGrid.Children);
-        
+
         // Get the game board for this game
-        var gameBoardInfo =  typeof(MainWindow).GetField("gameBoard", BindingFlags.NonPublic | BindingFlags.Instance);
+        var gameBoardInfo = typeof(MainWindow).GetField("gameBoard", BindingFlags.NonPublic | BindingFlags.Instance);
         Assert.NotNull(gameBoardInfo);
         var gameBoard = (GameBoard?)gameBoardInfo.GetValue(window);
         Assert.NotNull(gameBoard);
-        
+
         // Blue player place an S
         gameBoardGrid.Children[0].RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-        
+
         // Set blue player to be a computer player
         SetIsComputerGameBoard(PlayerType.BlueLeft, true, gameBoard);
-        
+
         // Red player place an O
         gameBoardGrid.Children[1].RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
- 
+
         // Check that an SOS was made by the blue computer player
         Assert.Equal(1, gameBoard.Blue.Score);
     }
