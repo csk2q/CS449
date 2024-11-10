@@ -38,7 +38,7 @@ public abstract class GameBoard : IDisposable
     private Random random = new Random();
 
     //Turn stuff
-    protected record Turn(PlayerType Player, Position Position, TileType TileType);
+    public record Turn(PlayerType Player, Position Position, TileType TileType);
 
     protected List<Turn> turnRecord = [];
 
