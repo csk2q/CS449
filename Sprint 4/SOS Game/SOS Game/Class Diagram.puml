@@ -49,6 +49,16 @@ class GeneralGame <<sealed>> {
     + <<override>> IsGameOver() : bool
 }
 GameBoard <|-- GeneralGame
+class HumanPlayer {
+    + HumanPlayer(playerType:PlayerType)
+    + HumanPlayer(otherPlayer:Player)
+}
+Player <|-- HumanPlayer
+class ComputerPlayer {
+    + ComputerPlayer(playerType:PlayerType)
+    + ComputerPlayer(otherPlayer:Player)
+}
+Player <|-- ComputerPlayer
 abstract class GameBoard {
     + <<const>> DefaultBoardSize : decimal = 3
     + <<const>> MinBoardSize : decimal = 3
@@ -108,11 +118,13 @@ class SimpleGame <<sealed>> {
     + <<override>> IsGameOver() : bool
 }
 GameBoard <|-- SimpleGame
-class Player {
+abstract class Player {
     + Score : int
     + <<readonly>> IsComputer : bool
-    + Player(playerType:PlayerType, isComputer:bool)
+    # Player(playerType:PlayerType, isComputer:bool)
     + Player(otherPlayer:Player)
+    + {static} Create(playerType:PlayerType, isComputer:bool) : Player
+    + {static} Clone(otherPlayer:Player) : Player
 }
 Player --> "PlayerType" PlayerType
 class Position <<record>> {

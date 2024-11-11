@@ -48,8 +48,8 @@ public abstract class GameBoard : IDisposable
     {
         //Set variables
         this.size = (int)Math.Clamp(size, MinBoardSize, MaxBoardSize);
-        Blue = new Player(PlayerType.BlueLeft, isBlueComputer);
-        Red = new Player(PlayerType.RedRight, isRedComputer);
+        Blue = Player.Create(PlayerType.BlueLeft, isBlueComputer);
+        Red = Player.Create(PlayerType.RedRight, isRedComputer);
 
         // Generate board
         board = new TileType[size][];
@@ -63,8 +63,8 @@ public abstract class GameBoard : IDisposable
         board = other.board.Select(a => (TileType[])a.Clone()).ToArray();
         size = other.size;
         CurPlayerTurn = other.CurPlayerTurn;
-        Blue = new Player(other.Blue);
-        Red = new Player(other.Red);
+        Blue = Player.Clone(other.Blue);
+        Red = Player.Clone(other.Red);
         random = other.random;
         turnRecord = new List<Turn>(other.turnRecord);
         OnBoardUpdateEvent = null;

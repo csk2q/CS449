@@ -100,7 +100,7 @@ public static class TestHelper
         }
         
         Assert.NotNull(playerInfo);
-        playerInfo.SetValue(board, new Player(board.Blue.PlayerType, isComputer));
+        playerInfo.SetValue(board, Player.Create(board.Blue.PlayerType, isComputer));
     }
     
 }
