@@ -321,9 +321,6 @@ public partial class MainWindow : Window
         updateTurnText();
         updateScoreText();
 
-        // Show Avalonia bug warning if both players are computers
-        AvaloniaBugWarning.IsVisible = gameBoard.Blue.IsComputer && gameBoard.Red.IsComputer;
-
         gameBoard.StartGame();
     }
 

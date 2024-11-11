@@ -143,10 +143,6 @@
                 </TextBlock>
             </StackPanel>
             
-            <!-- Line Mark Avalonia Bug -->
-            <TextBlock Name="AvaloniaBugWarning" IsVisible="False" TextWrapping="WrapWithOverflow" Foreground="Firebrick" Background="DarkKhaki" Padding="2"
-                       >Warning! Due to a bug in Avalonia (the UI library) SOSes may not be marked with a line or the line may render incorrectly when both players are set to computer. See code comments in the function MainWindow.markSos() for details.</TextBlock>
-            
         </StackPanel>
 
         <!-- New Game Button -->
