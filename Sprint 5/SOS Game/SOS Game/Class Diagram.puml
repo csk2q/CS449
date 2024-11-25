@@ -1,0 +1,161 @@
+﻿@startuml
+class MainWindow <<partial>> {
+    - currentBoardSize : int
+    - gameBoard : GameBoard
+    - SimpleGameRadioButton : RadioButton
+    - GeneralGameRadioButton : RadioButton
+    - BoardSizeNumericUpDown : NumericUpDown
+    - BlueScore : TextBlock
+    - BlueSChoice : RadioButton
+    - BlueOChoice : RadioButton
+    - BlueHumanRadioButton : RadioButton
+    - BlueComputerRadioButton : RadioButton
+    - RedScore : TextBlock
+    - RedSChoice : RadioButton
+    - RedOChoice : RadioButton
+    - RedHumanRadioButton : RadioButton
+    - RedComputerRadioButton : RadioButton
+    - TurnDisplay : StackPanel
+    - TurnTextBlock : TextBlock
+    - WinnerDisplay : StackPanel
+    - WinnerText : TextBlock
+    - WinnerNameText : TextBlock
+    - GameBoarder : Border
+    - GameBoardGrid : UniformGrid
+    - BoardCanvas : Canvas
+    + MainWindow()
+    - getBoardSizeInput() : int
+    - getNewTile(tileType:TileType) : Button
+    - updateTurnText() : void
+    - updateScoreText() : void
+    - getTile(row:int, column:int) : Button?
+    - getIsComputer(playerType:PlayerType) : bool
+    - OnWindowSizeChanged(sender:object?, e:SizeChangedEventArgs) : void
+    - GameBoardGrid_OnSizeChanged(sender:object?, e:SizeChangedEventArgs) : void
+    - onBoardUpdateHandler(turn:TurnResult) : void
+    - placeTile(sender:object?, e:RoutedEventArgs) : void
+    + StartNewGame(sender:object?, e:RoutedEventArgs) : void
+    - markSos(sos:Sos) : void
+}
+MainWindow o-> "gameBoard" GameBoard
+
+
+
+
+class GeneralGame <<sealed>> {
+    + GeneralGame(size:int, isBlueComputer:bool, isRedComputer:bool)
+    + GeneralGame(other:GameBoard)
+    + <<override>> GetGameType() : GameType
+    + <<override>> IsGameOver() : bool
+}
+GameBoard <|-- GeneralGame
+class HumanPlayer {
+    + HumanPlayer(playerType:PlayerType)
+    + HumanPlayer(otherPlayer:Player)
+}
+Player <|-- HumanPlayer
+class ComputerPlayer {
+    + ComputerPlayer(playerType:PlayerType)
+    + ComputerPlayer(otherPlayer:Player)
+}
+Player <|-- ComputerPlayer
+abstract class GameBoard {
+    + <<const>> DefaultBoardSize : decimal = 3
+    + <<const>> MinBoardSize : decimal = 3
+    + <<const>> MaxBoardSize : decimal = 20
+    + <get; private set> CurPlayerTurn : PlayerType
+    + <get; init> Blue : Player
+    + <get; init> Red : Player
+    -  <<event>> OnBoardUpdateEvent : OnGameBoardUpdate? 
+    + IsGameStarted : bool <<get>>
+    - board : TileType[][]
+    - <<readonly>> size : int
+    - random Random
+    # turnRecord : List<Turn>
+    # GameBoard(size:int, isBlueComputer:bool, isRedComputer:bool)
+    # GameBoard(other:GameBoard)
+    + {static} CreateNewGame(gameType:GameType, boardSize:int, isBlueComputer:bool, isRedComputer:bool) : GameBoard
+    # {static} CloneGameBoard(other:GameBoard) : GameBoard
+    + Dispose() : void
+    + {abstract} GetGameType() : GameType
+    + {abstract} IsGameOver() : bool
+    - getTile(row:int, column:int) : TileType
+    + IsBoardFilled() : bool
+    + GetWinner() : PlayerType
+    + IsCurrentPlayerComputer() : bool
+    - getRandomTileType() : TileType
+    - getEmptyTiles() : List<Position>
+    + SubscribeToBoardChanges(handler:OnGameBoardUpdate) : void
+    + StartGame() : bool
+    + PlaceTile(row:int, column:int, tileType:TileType) : bool
+    - placeTile(row:int, column:int, tileType:TileType, completedSosArray:Sos[]) : bool
+    - checkSos(row:int, column:int) : Sos[]
+    - checkSos(row:int, column:int, placedTile:TileType) : Sos[]
+    - tickComputerPlayers() : void
+    - makeComputerMove() : TurnResult
+}
+class Turn <<record>> {
+}
+
+
+interface IDisposable
+
+IDisposable <|-- GameBoard
+GameBoard o-> "CurPlayerTurn" PlayerType
+GameBoard ---> "Blue" Player
+GameBoard ---> "Red" Player
+GameBoard --> "gameType" GameType
+GameBoard o-> "random" Random
+GameBoard o-> "turnRecord" "List<Turn>"
+GameBoard +-- Turn
+Turn ---> "Player" PlayerType
+Turn ---> "Position" Position
+Turn ---> "TileType" TileType
+class SimpleGame <<sealed>> {
+    + SimpleGame(size:int, isBlueComputer:bool, isRedComputer:bool)
+    + SimpleGame(game:GameBoard)
+    + <<override>> GetGameType() : GameType
+    + <<override>> IsGameOver() : bool
+}
+GameBoard <|-- SimpleGame
+abstract class Player {
+    + Score : int
+    + <<readonly>> IsComputer : bool
+    # Player(playerType:PlayerType, isComputer:bool)
+    + Player(otherPlayer:Player)
+    + {static} Create(playerType:PlayerType, isComputer:bool) : Player
+    + {static} Clone(otherPlayer:Player) : Player
+}
+Player --> "PlayerType" PlayerType
+class Position <<record>> {
+    + row : int <<get>> <<init>>
+    + column : int <<get>> <<init>>
+}
+class Sos <<record>> {
+}
+class Move <<record>> {
+}
+class TurnResult <<record>> {
+}
+Sos --> "S1" Position
+Sos --> "O" Position
+Sos --> "S2" Position
+Move --> "Tile" TileType
+Move --> "Position" Position
+TurnResult --> "Move" Move
+TurnResult --> "placingPlayer" PlayerType
+enum PlayerType {
+    None,
+    BlueLeft,
+    RedRight,
+}
+enum TileType {
+    None,
+    S,
+    O,
+}
+enum GameType {
+    Simple,
+    General,
+}
+@enduml
