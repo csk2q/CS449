@@ -196,23 +196,23 @@ public class Sprint4UnitTests
         var getTileInfo = typeof(MainWindow).GetMethod("getTile", BindingFlags.NonPublic | BindingFlags.Instance);
         Assert.NotNull(getTileInfo);
 
-        GameBoard.Turn[] turns =
+        Turn[] turns =
         [
-            new GameBoard.Turn(PlayerType.BlueLeft, new Position(0, 2), TileType.O),
-            new GameBoard.Turn(PlayerType.RedRight, new Position(3, 3), TileType.S),
-            new GameBoard.Turn(PlayerType.BlueLeft, new Position(0, 0), TileType.S),
-            new GameBoard.Turn(PlayerType.RedRight, new Position(2, 1), TileType.O),
-            new GameBoard.Turn(PlayerType.BlueLeft, new Position(3, 0), TileType.O),
-            new GameBoard.Turn(PlayerType.RedRight, new Position(2, 0), TileType.O),
-            new GameBoard.Turn(PlayerType.BlueLeft, new Position(0, 3), TileType.O),
-            new GameBoard.Turn(PlayerType.RedRight, new Position(1, 0), TileType.O),
-            new GameBoard.Turn(PlayerType.BlueLeft, new Position(1, 2), TileType.S),
-            new GameBoard.Turn(PlayerType.RedRight, new Position(1, 3), TileType.O),
-            new GameBoard.Turn(PlayerType.BlueLeft, new Position(3, 1), TileType.O),
-            new GameBoard.Turn(PlayerType.RedRight, new Position(0, 1), TileType.S),
-            new GameBoard.Turn(PlayerType.BlueLeft, new Position(3, 2), TileType.O),
+            new Turn(PlayerType.BlueLeft, new Position(0, 2), TileType.O),
+            new Turn(PlayerType.RedRight, new Position(3, 3), TileType.S),
+            new Turn(PlayerType.BlueLeft, new Position(0, 0), TileType.S),
+            new Turn(PlayerType.RedRight, new Position(2, 1), TileType.O),
+            new Turn(PlayerType.BlueLeft, new Position(3, 0), TileType.O),
+            new Turn(PlayerType.RedRight, new Position(2, 0), TileType.O),
+            new Turn(PlayerType.BlueLeft, new Position(0, 3), TileType.O),
+            new Turn(PlayerType.RedRight, new Position(1, 0), TileType.O),
+            new Turn(PlayerType.BlueLeft, new Position(1, 2), TileType.S),
+            new Turn(PlayerType.RedRight, new Position(1, 3), TileType.O),
+            new Turn(PlayerType.BlueLeft, new Position(3, 1), TileType.O),
+            new Turn(PlayerType.RedRight, new Position(0, 1), TileType.S),
+            new Turn(PlayerType.BlueLeft, new Position(3, 2), TileType.O),
         ];
-        var finalTurn = new GameBoard.Turn(PlayerType.RedRight, new Position(2, 3), TileType.S);
+        var finalTurn = new Turn(PlayerType.RedRight, new Position(2, 3), TileType.S);
 
         // Place tiles
         foreach (var turn in turns)

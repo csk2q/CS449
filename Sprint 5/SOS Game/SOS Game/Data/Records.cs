@@ -7,3 +7,5 @@ public record Sos(Position S1, Position O, Position S2);
 public record Move(TileType Tile, Position Position);
 
 public record TurnResult(Move Move, Sos[] SosMade, PlayerType placingPlayer);
+
+public record Turn(PlayerType Player, Position Position, TileType TileType);

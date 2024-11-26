@@ -1,11 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Text.Json;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using SOS_Game.Logic;
 using Timer = System.Timers.Timer;
@@ -17,10 +21,15 @@ public partial class MainWindow : Window
     // Note: Several functions & variables have been made public to allow for unit testing
 
     // Variables //
+    private const string replayFolder = "./replays/";
 
     private int currentBoardSize;
     private GameBoard gameBoard = new SimpleGame(0, false, false);
 
+    private List<TurnResult> turnResults = new List<TurnResult>();
+    private bool replayInProgress = false;
+    private bool recordingGame = false;
+    private Task saveGameTask;
 
     // Constructor //
     public MainWindow()
@@ -232,6 +241,7 @@ public partial class MainWindow : Window
 
         updateTurnText();
         updateScoreText();
+        recordTurn(turn);
     }
 
 
@@ -239,46 +249,50 @@ public partial class MainWindow : Window
 
     private void placeTile(object? sender, RoutedEventArgs e)
     {
-        if (sender is Button button)
-        {
-            // Variables
-            TileType tileSelection;
-            var placingPlayer = gameBoard.CurPlayerTurn;
+        if (!replayInProgress)
+            if (sender is Button button)
+            {
+                // Variables
+                TileType tileSelection;
+                var placingPlayer = gameBoard.CurPlayerTurn;
 
-            // Get player choices
-            if (placingPlayer == PlayerType.BlueLeft)
-            {
-                //BlueLeft's turn
-                if (BlueSChoice.IsChecked ?? true)
-                    tileSelection = TileType.S;
+                // Get player choices
+                if (placingPlayer == PlayerType.BlueLeft)
+                {
+                    //BlueLeft's turn
+                    if (BlueSChoice.IsChecked ?? true)
+                        tileSelection = TileType.S;
+                    else
+                        tileSelection = TileType.O;
+                }
+                else if (placingPlayer == PlayerType.RedRight)
+                {
+                    //RedRight's turn
+                    if (RedSChoice.IsChecked ?? true)
+                        tileSelection = TileType.S;
+                    else
+                        tileSelection = TileType.O;
+                }
                 else
-                    tileSelection = TileType.O;
-            }
-            else if (placingPlayer == PlayerType.RedRight)
-            {
-                //RedRight's turn
-                if (RedSChoice.IsChecked ?? true)
-                    tileSelection = TileType.S;
-                else
-                    tileSelection = TileType.O;
+                    throw new ApplicationException($"Unknown Player turn! \"{placingPlayer}\" is not a valid player.");
+
+                // Try place tile
+                bool result = gameBoard.PlaceTile(Grid.GetRow(button), Grid.GetColumn(button), tileSelection);
             }
             else
-                throw new ApplicationException($"Unknown Player turn! \"{placingPlayer}\" is not a valid player.");
-
-            // Try place tile
-            bool result = gameBoard.PlaceTile(Grid.GetRow(button), Grid.GetColumn(button), tileSelection);
-        }
-        else
-            Debug.Assert(false, "ClickTile called but sender is not a button! Sender: " + sender);
+                Debug.Assert(false, "ClickTile called but sender is not a button! Sender: " + sender);
     }
 
     public void StartNewGame(object? sender, RoutedEventArgs e)
     {
         // Get rid of old board
         gameBoard.Dispose();
+        replayInProgress = false;
+        turnResults.Clear();
 
         // Get input
         var boardSize = currentBoardSize = getBoardSizeInput();
+        recordingGame = RecordGameCheckBox?.IsChecked ?? false;
 
         //Default game mode is simple
         GameType gameMode = (SimpleGameRadioButton.IsChecked ?? true) ? GameType.Simple : GameType.General;
@@ -324,8 +338,177 @@ public partial class MainWindow : Window
         gameBoard.StartGame();
     }
 
+    public async void ReplayButtonClick(object? sender, RoutedEventArgs e)
+    {
+        // Disable game recording
+        replayInProgress = false;
+        recordingGame = false;
+        RecordGameCheckBox.IsChecked = false;
+        // try
+        // {
+            var clickedButton = (Button?)sender;
+            await LoadGameReplayAsync(clickedButton, e);
+        // }
+        // catch (Exception exception)
+        // {
+        //     Console.WriteLine(exception);
+        //     Debug.Assert(false, "ERROR in replaying game.");
+        // }
+    }
+
+    private async Task LoadGameReplayAsync(Button button, RoutedEventArgs e)
+    {
+        Directory.CreateDirectory(replayFolder);
+
+        // Find most recent file
+        var latestCreationTime = DateTime.UnixEpoch;
+        string newestFile = "";
+        foreach (string fileName in Directory.EnumerateFiles(replayFolder))
+        {
+            using var fileHandle = File.OpenHandle(fileName);
+
+            var creationTime = File.GetCreationTime(fileHandle);
+            if (creationTime > latestCreationTime)
+            {
+                latestCreationTime = creationTime;
+                newestFile = fileName;
+            }
+        }
+        
+        // User picks replay file
+        var replayFiles = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions()
+        {
+            Title = "Replay file",
+            AllowMultiple = false,
+            // FileTypeFilter = [new FilePickerFileType("replay"), new FilePickerFileType("json")],
+            SuggestedFileName = newestFile.Split('/')[^1],
+            SuggestedStartLocation = await StorageProvider.TryGetFolderFromPathAsync(replayFolder)
+        });
+
+        // Load the replay and play it
+        if (replayFiles.Count != 0)
+        {
+            var replayFile = replayFiles[0];
+
+            var jsonText = await File.ReadAllTextAsync(replayFolder + replayFile.Name);
+
+            var gameRecord = JsonSerializer.Deserialize<GameRecord>(jsonText, new JsonSerializerOptions()
+            {
+                IncludeFields = true,
+            });
+
+            Debug.Assert(gameRecord is not null, "Warning: gameRecord is null");
+
+            await ReplayGameAsync(gameRecord);
+        }
+
+        // Clean up storage files
+        foreach (var storageFile in replayFiles)
+            storageFile.Dispose();
+    }
 
     // Helper Functions //
+
+    private async Task ReplayGameAsync(GameRecord gameRecord)
+    {
+        // Set players to be human in the UI
+        BlueComputerRadioButton.IsChecked = false;
+        BlueHumanRadioButton.IsChecked = true;
+        RedComputerRadioButton.IsChecked = false;
+        RedHumanRadioButton.IsChecked = true;
+
+        // Set board size and game type
+        SimpleGameRadioButton.IsChecked = gameRecord.GameType == GameType.Simple;
+        GeneralGameRadioButton.IsChecked = gameRecord.GameType == GameType.General;
+        BoardSizeNumericUpDown.Value = gameRecord.BoardSize;
+        
+        Dispatcher.UIThread.RunJobs();
+
+        // Start game
+        StartNewGame(null, new RoutedEventArgs());
+        replayInProgress = true;
+
+        // Set UI choices to be correct
+        BlueComputerRadioButton.IsChecked = gameRecord.BluePlayerIsComputer;
+        BlueHumanRadioButton.IsChecked = !gameRecord.BluePlayerIsComputer;
+        RedComputerRadioButton.IsChecked = gameRecord.RedPlayerIsComputer;
+        RedHumanRadioButton.IsChecked = !gameRecord.RedPlayerIsComputer;
+        
+        Dispatcher.UIThread.RunJobs();
+
+        // Display each turn
+        foreach (TurnResult turnResult in gameRecord.TurnResults)
+        {
+            if(!replayInProgress)
+                break;
+            
+            // Set Radio buttons
+            RadioButton SRadioButton;
+            RadioButton ORadioButton;
+            switch (turnResult.placingPlayer)
+            {
+                case PlayerType.BlueLeft:
+                    SRadioButton = BlueSChoice;
+                    ORadioButton = BlueOChoice;
+                    break;
+                case PlayerType.RedRight:
+                    SRadioButton = RedSChoice;
+                    ORadioButton = RedOChoice;
+                    break;
+                case PlayerType.None:
+                default:
+                    // Break
+                    throw new ArgumentOutOfRangeException("turnResult.placingPlayer must be either blue or red.");
+            }
+
+            SRadioButton.IsChecked = turnResult.Move.Tile == TileType.S;
+            ORadioButton.IsChecked = turnResult.Move.Tile == TileType.O;
+
+            Dispatcher.UIThread.RunJobs();
+
+            gameBoard.PlaceTile(turnResult.Move.Position.row, turnResult.Move.Position.column, turnResult.Move.Tile);
+
+            await Task.Delay(200);
+        }
+    }
+
+    private void recordTurn(TurnResult turn)
+    {
+        if (!recordingGame)
+            return;
+
+        turnResults.Add(turn);
+
+        if (gameBoard.IsGameOver())
+        {
+            recordingGame = false;
+            Task.Run(SaveGameReplayAsync);
+        }
+    }
+
+    private async Task SaveGameReplayAsync()
+    {
+        Console.WriteLine("Saving replay");
+        
+        GameRecord record = new GameRecord()
+        {
+            TurnResults = turnResults.ToArray(),
+            BluePlayerIsComputer = gameBoard.Blue.IsComputer,
+            RedPlayerIsComputer = gameBoard.Red.IsComputer,
+            GameType = gameBoard.GetGameType(),
+            BoardSize = gameBoard.GetBoardSize(),
+        };
+
+        var json = JsonSerializer.Serialize(record, new JsonSerializerOptions()
+        {
+            IncludeFields = true,
+        });
+
+
+        var filename = $"{DateTime.Now:yyyy-MM-dd-HH-mm-ss-ffff}-{gameBoard.GetGameType()}-B{record.BluePlayerIsComputer}R{record.RedPlayerIsComputer}.replay";
+        
+        await File.WriteAllTextAsync(replayFolder + filename, json);
+    }
 
     private void markSos(Sos sos)
     {

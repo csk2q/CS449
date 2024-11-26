@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace SOS_Game.Logic;
 
-public abstract class GameBoard : IDisposable
+public abstract partial class GameBoard : IDisposable
 {
     // Constants //
 
@@ -38,7 +38,6 @@ public abstract class GameBoard : IDisposable
     private Random random = new Random();
 
     //Turn stuff
-    public record Turn(PlayerType Player, Position Position, TileType TileType);
 
     protected List<Turn> turnRecord = [];
 
@@ -131,6 +130,8 @@ public abstract class GameBoard : IDisposable
         else
             return TileType.None;
     }
+    
+    public int GetBoardSize() => size;
 
     public bool IsBoardFilled()
     {

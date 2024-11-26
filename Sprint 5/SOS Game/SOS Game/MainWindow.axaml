@@ -142,15 +142,31 @@
                     ???
                 </TextBlock>
             </StackPanel>
-            
+
         </StackPanel>
 
-        <!-- New Game Button -->
-        <Button Grid.Row="2" Grid.Column="2"
-                HorizontalAlignment="Center" VerticalAlignment="Center"
-                FontSize="17" Click="StartNewGame">
-            New game
-        </Button>
+        <StackPanel Grid.Row="2" Grid.Column="2" HorizontalAlignment="Center">
+            <!-- Replay Button -->
+            <Button HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                    FontSize="17" HorizontalContentAlignment="Center"
+                    Click="ReplayButtonClick">
+                Replay
+            </Button>
+            
+            <!-- New Game Button -->
+            <Button Grid.Row="2" Grid.Column="2"
+                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                    FontSize="17" Click="StartNewGame">
+                New game
+            </Button>
+        </StackPanel>
+
+        <!-- Record Game CheckBox  -->
+        <CheckBox Grid.Row="3" Grid.Column="0" Name="RecordGameCheckBox"
+                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                  FontSize="17">
+            Record Game
+        </CheckBox>
 
         <!-- Game Board -->
         <Border Name="GameBoarder" Grid.Row="1" Grid.Column="1"
